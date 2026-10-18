@@ -1,19 +1,16 @@
-from datos.conexion import base_datos
-from peewee import Model, AutoField, DateField, BooleanField, TextField, ForeignKeyField
+from peewee import AutoField, DateField, BooleanField, CharField, ForeignKeyField
+from datos.modelos.base import BaseModel
 from datos.modelos.estudiante import Estudiante
 
-database = base_datos()
-
-class BaseModel(Model):
-    class Meta:
-        database = database
 
 class Asistencia(BaseModel):
     id_asistencia = AutoField()
     fecha = DateField()
-    presente = BooleanField()
-    observacion = TextField(null=True)
-    estudiante = ForeignKeyField(Estudiante, backref='asistencias', null=True)
+    presente = BooleanField(default=True)
+    observacion = CharField(max_length=500, null=True)
+    # UML: un Estudiante tiene muchas Asistencias (1 a *)
+    estudiante = ForeignKeyField(Estudiante, column_name='id_estudiante',
+                                 backref='asistencias', null=True)
 
     class Meta:
         table_name = 'asistencias'
