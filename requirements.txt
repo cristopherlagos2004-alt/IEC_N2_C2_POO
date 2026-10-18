@@ -1,0 +1,14 @@
+bcrypt==5.0.0
+cryptography==48.0.0
+maskpass==0.3.7
+mysql-connector-python==9.7.0
+mysqlclient==2.2.8
+peewee==4.5.1
+prettytable==3.17.0
+pwinput==1.0.3
+PyMySQL==1.2.3
+pytest==9.0.3
+python-decouple==3.8
+requests==2.33.1
+rut-chile==2.0.1
+SQLAlchemy==2.0.49
