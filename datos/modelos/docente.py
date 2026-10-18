@@ -1,11 +1,6 @@
-from datos.conexion import base_datos
-from peewee import Model, AutoField, CharField
+from peewee import AutoField, CharField
+from datos.modelos.base import BaseModel
 
-database = base_datos()
-
-class BaseModel(Model):
-    class Meta:
-        database = database
 
 class Docente(BaseModel):
     id_docente = AutoField()

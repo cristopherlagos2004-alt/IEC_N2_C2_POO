@@ -1,53 +1,54 @@
-from negocio.negocio_estudiantes import cargar_estudiantes, crear_estudiante, buscar_estudiantes
-from datos.repositorio.repositorio_estudiantes import estudiante_por_id, guardar_estudiante, estudiante_por_nombre_exacto
-from datos.models import Estudiantes
 from prettytable import PrettyTable
+from negocio.negocio_estudiantes import (
+    cargar_estudiantes, buscar_estudiantes, obtener_estudiante,
+    crear_estudiante, actualizar_estudiante as actualizar_en_negocio,
+    eliminar_estudiante as eliminar_en_negocio)
+
+# Esta capa solo pide datos y muestra resultados.
+# Toda la lógica y las validaciones están en la capa de negocio.
+
 
 def mostrar_estudiantes():
-    tabla_estudiantes = PrettyTable()
-    tabla_estudiantes = cargar_estudiantes(tabla_estudiantes)
-    print(tabla_estudiantes)
+    print(cargar_estudiantes(PrettyTable()))
+
 
 def datos_estudiante():
-    rut = input('Ingrese RUT de Estudiante: ')
+    rut = input('Ingrese RUT de Estudiante (ej: 12345678-9): ')
     nombre = input('Ingrese Nombre de Estudiante: ')
     fecha_nacimiento = input('Ingrese Fecha de Nacimiento (YYYY-MM-DD): ')
-    crear_estudiante(rut, nombre.title(), fecha_nacimiento)
+    _, mensaje = crear_estudiante(rut, nombre, fecha_nacimiento)
+    print(mensaje)
+
 
 def buscar_estudiante_nombre(nombre):
-    tabla_estudiantes = PrettyTable()
-    tabla_estudiantes = buscar_estudiantes(tabla_estudiantes, nombre)
-    print(tabla_estudiantes)
+    print(buscar_estudiantes(PrettyTable(), nombre))
 
-def actualizar_estudiante():
+
+def _seleccionar_estudiante(accion):
     nombre_busqueda = input('Ingrese Nombre de Estudiante a buscar: ')
     buscar_estudiante_nombre(nombre_busqueda)
-    id_ingresado = input('Ingrese Id de Estudiante para modificar: ')
-    estudiante = estudiante_por_id(id_ingresado)
-    if estudiante:
-        nombre_nuevo = input('Ingrese Nuevo Nombre de Estudiante (o ENTER para conservar): ')
-        rut_nuevo = input('Ingrese Nuevo RUT de Estudiante (o ENTER para conservar): ')
-        
-        if nombre_nuevo != '':
-            estudiante.nombre = nombre_nuevo.title()
-        if rut_nuevo != '':
-            estudiante.rut = rut_nuevo
-            
-        respuesta = guardar_estudiante(estudiante)
-        if respuesta == 1:
-            print(f'Estudiante {estudiante.nombre} actualizado con éxito')
-    else:
-        print('Estudiante no encontrado con ese ID.')
+    id_ingresado = input(f'Ingrese Id de Estudiante para {accion}: ')
+    estudiante = obtener_estudiante(id_ingresado)
+    if estudiante is None:
+        print('No se encontró un estudiante activo con ese Id.')
+    return estudiante
+
+
+def actualizar_estudiante():
+    estudiante = _seleccionar_estudiante('modificar')
+    if estudiante is not None:
+        nombre_nuevo = input('Ingrese Nuevo Nombre (o ENTER para conservar): ')
+        rut_nuevo = input('Ingrese Nuevo RUT (o ENTER para conservar): ')
+        _, mensaje = actualizar_en_negocio(estudiante, nombre_nuevo, rut_nuevo)
+        print(mensaje)
+
 
 def eliminar_estudiante():
-    nombre_busqueda = input('Ingrese Nombre de Estudiante: ')
-    buscar_estudiante_nombre(nombre_busqueda)
-    id_ingresado = input('Ingrese Id de Estudiante para eliminar: ')
-    estudiante = estudiante_por_id(id_ingresado)
-    if estudiante:
-        # En el modelo podemos marcar inhabilitado o eliminar físicamente según prefiera
-        respuesta = guardar_estudiante(estudiante)
-        if respuesta == 1:
-            print(f'Estudiante {estudiante.nombre} procesado con éxito')
-    else:
-        print('Estudiante no encontrado.')
+    estudiante = _seleccionar_estudiante('eliminar')
+    if estudiante is not None:
+        confirmacion = input(f'¿Seguro que desea eliminar a {estudiante.nombre}? (s/n): ')
+        if confirmacion.strip().lower() == 's':
+            _, mensaje = eliminar_en_negocio(estudiante)
+            print(mensaje)
+        else:
+            print('Operación cancelada.')

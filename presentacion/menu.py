@@ -1,16 +1,22 @@
-import sys
-from datos import nombre_app, version_app, main_menu
-from presentacion.presentacion_estudiantes import mostrar_estudiantes, datos_estudiante, buscar_estudiante_nombre, actualizar_estudiante, eliminar_estudiante
+from datos.auxiliar import nombre_app, version_app, main_menu
+from presentacion.menu_autor import solicitar_datos_autor
+from presentacion.presentacion_estudiantes import (
+    mostrar_estudiantes, datos_estudiante, buscar_estudiante_nombre,
+    actualizar_estudiante, eliminar_estudiante)
+
 
 def menu_principal():
-    print(f'{nombre_app} {version_app}')
-    print('='*len(nombre_app) + "=" + '='*len(version_app))
+    titulo = f'{nombre_app} {version_app}'
+    print(titulo)
+    print('=' * len(titulo))
+    solicitar_datos_autor()
 
     while True:
+        print()
         for clave, valor in main_menu.items():
             print(f'[{clave}] - {valor}')
 
-        opcion_usuario = input('Ingrese una opción [1-5]: ')
+        opcion_usuario = input(f'Ingrese una opción [1-{len(main_menu)}]: ').strip()
 
         if opcion_usuario == '1':
             mostrar_estudiantes()
@@ -22,7 +28,9 @@ def menu_principal():
         elif opcion_usuario == '4':
             actualizar_estudiante()
         elif opcion_usuario == '5':
-            print('Saliendo de Sistema')
-            sys.exit()
+            eliminar_estudiante()
+        elif opcion_usuario == '6':
+            print('Saliendo del Sistema')
+            break
         else:
-            print('Opción Ingresada NO corresponde...\nIngrese nuevamente.')
+            print('Opción ingresada NO corresponde. Ingrese nuevamente.')
