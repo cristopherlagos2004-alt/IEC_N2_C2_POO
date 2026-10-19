@@ -1,54 +1,36 @@
-from prettytable import PrettyTable
-from negocio.negocio_estudiantes import (
-    cargar_estudiantes, buscar_estudiantes, obtener_estudiante,
-    crear_estudiante, actualizar_estudiante as actualizar_en_negocio,
-    eliminar_estudiante as eliminar_en_negocio)
-
-# Esta capa solo pide datos y muestra resultados.
-# Toda la lógica y las validaciones están en la capa de negocio.
+from presentacion.consola import mostrar_tabla
+from presentacion.menu_crud import MenuCrud
 
 
-def mostrar_estudiantes():
-    print(cargar_estudiantes(PrettyTable()))
+class MenuEstudiantes(MenuCrud):
+    def __init__(self, negocio, negocio_cursos, negocio_apoderados):
+        super().__init__('Estudiantes', negocio)
+        self.__cursos = negocio_cursos
+        self.__apoderados = negocio_apoderados
 
+    def pedir_datos(self, actual=None):
+        return {
+            'rut': self._pedir('rut', 'RUT (ej: 12345678-9)', actual),
+            'nombre': self._pedir('nombre', 'Nombre', actual),
+            'fecha_nacimiento': self._pedir('fecha_nacimiento', 'Fecha de nacimiento (DD-MM-AAAA)',
+                                            actual),
+            'curso': self._elegir(self.__cursos, 'curso', 'curso', actual),
+            'apoderado': self._elegir(self.__apoderados, 'apoderado', 'apoderado', actual),
+        }
 
-def datos_estudiante():
-    rut = input('Ingrese RUT de Estudiante (ej: 12345678-9): ')
-    nombre = input('Ingrese Nombre de Estudiante: ')
-    fecha_nacimiento = input('Ingrese Fecha de Nacimiento (YYYY-MM-DD): ')
-    _, mensaje = crear_estudiante(rut, nombre, fecha_nacimiento)
-    print(mensaje)
+    def opciones_extra(self):
+        return [('Ver ficha académica (promedio, asistencia y notas)', self.ver_ficha)]
 
-
-def buscar_estudiante_nombre(nombre):
-    print(buscar_estudiantes(PrettyTable(), nombre))
-
-
-def _seleccionar_estudiante(accion):
-    nombre_busqueda = input('Ingrese Nombre de Estudiante a buscar: ')
-    buscar_estudiante_nombre(nombre_busqueda)
-    id_ingresado = input(f'Ingrese Id de Estudiante para {accion}: ')
-    estudiante = obtener_estudiante(id_ingresado)
-    if estudiante is None:
-        print('No se encontró un estudiante activo con ese Id.')
-    return estudiante
-
-
-def actualizar_estudiante():
-    estudiante = _seleccionar_estudiante('modificar')
-    if estudiante is not None:
-        nombre_nuevo = input('Ingrese Nuevo Nombre (o ENTER para conservar): ')
-        rut_nuevo = input('Ingrese Nuevo RUT (o ENTER para conservar): ')
-        _, mensaje = actualizar_en_negocio(estudiante, nombre_nuevo, rut_nuevo)
-        print(mensaje)
-
-
-def eliminar_estudiante():
-    estudiante = _seleccionar_estudiante('eliminar')
-    if estudiante is not None:
-        confirmacion = input(f'¿Seguro que desea eliminar a {estudiante.nombre}? (s/n): ')
-        if confirmacion.strip().lower() == 's':
-            _, mensaje = eliminar_en_negocio(estudiante)
-            print(mensaje)
-        else:
-            print('Operación cancelada.')
+    def ver_ficha(self):
+        estudiante = self.seleccionar('ver su ficha')
+        if estudiante is None:
+            return
+        ficha = self.negocio.ficha(estudiante)
+        print()
+        print(ficha['datos'])
+        print(f'Promedio general: {ficha["promedio"]}')
+        print(f'Asistencia: {ficha["asistencia"]}')
+        print('\nNotas:')
+        mostrar_tabla(ficha['notas'])
+        print('\nAsignaturas de su curso:')
+        mostrar_tabla(ficha['asignaturas'])
