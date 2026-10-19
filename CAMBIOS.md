@@ -1,4 +1,58 @@
-# Cambios realizados (revisión del 18-10-2026)
+# Cambios realizados
+
+# Versión 2.0 (19-10-2026): ajuste a la pauta de la Evaluación 2
+
+**No hay que recrear la base de datos**: las tablas no cambiaron. Basta con actualizar el código.
+
+## 1. Estructura pedida por la pauta
+- El diagrama UML pasó a la **raíz** del proyecto (`ev1poo.drawio`). Se agregó la clase abstracta `Persona` con sus flechas de herencia hacia Estudiante, Docente y Apoderado.
+- Nueva carpeta **`datos/auxiliares/`**, que reemplaza a `datos/auxiliar.py` y `negocio/validaciones.py`:
+  - `validaciones.py`: RUT, nombres, correo, teléfono, notas, porcentajes, montos y fechas
+  - `formatos.py`: fechas `DD-MM-AAAA`, montos `$45.000`, notas y porcentajes
+  - `calculos.py`: promedio con redondeo chileno (6.45 → 6.5) y porcentaje de asistencia
+  - `errores.py`: registro de errores en `errores.log`
+- **`datos/conexion.py`** ahora es la clase `Conexion`, con los métodos `conectar()`, `desconectar()` y `esta_conectada()`.
+
+## 2. CRUD de todos los componentes
+- El menú principal permite navegar por los **10 componentes**: Estudiantes, Cursos, Docentes, Asignaturas, Apoderados, Periodos, Evaluaciones, Calificaciones, Asistencias y Pagos.
+- Cada uno tiene **Listar, Registrar, Buscar, Actualizar y Eliminar**, más opciones propias que usan los métodos del UML:
+  - ficha académica del estudiante (promedio, asistencia y notas)
+  - estudiantes de un curso
+  - asignaturas y estudiantes de un docente
+  - promedio de una asignatura
+  - ficha del apoderado
+  - iniciar o cerrar un periodo
+  - registrar un pago
+- Los métodos del diagrama UML están implementados en los modelos: `obtenerPromedio()`, `consultarNotas()`, `listarEstudiantes()`, `cerrarPeriodo()`, `registrarPago()`, `validarNota()`, `calcularPromedio()`, etc.
+
+## 3. Principios de POO
+- **Abstracción:** clases abstractas `RepositorioBase`, `NegocioBase`, `MenuBase` y `MenuCrud`.
+- **Encapsulamiento:** atributos privados (`__repositorio`, `__negocio`, `__base_datos`) con propiedades de solo lectura.
+- **Herencia:** `Persona` → Estudiante, Docente y Apoderado. Además, cada repositorio, clase de negocio y menú hereda de su clase base, así que el CRUD se escribe una sola vez.
+- **Polimorfismo:** `columnas()`, `fila()` y `mostrar_datos()` distintos en cada modelo. `eliminar()` de estudiantes hace eliminación lógica. El menú principal trata igual a todos los submenús.
+
+## 4. Mejoras de uso
+- **Cada dato se valida apenas se escribe**: si está mal, se explica el motivo y se vuelve a pedir, sin tener que llenar todo el formulario.
+- Antes de eliminar, se revisa si hay registros que dependen del que se quiere borrar. Por ejemplo: "No se puede eliminar el curso: tiene registros asociados (1 en asignaturas, 2 en estudiantes)".
+- Reglas de negocio nuevas:
+  - una nota por estudiante en cada evaluación
+  - una asistencia por estudiante al día
+  - las ponderaciones de una asignatura no pasan de 100%
+  - un solo periodo activo
+  - un pago no se registra dos veces
+- Las fechas se aceptan como `15-05-2010`, `15/05/2010` o `2010-05-15`. Las notas, con coma o punto (`6,5` o `6.5`).
+
+## 5. Pruebas
+- **47 pruebas automáticas.** Las de `tests/test_negocio.py` usan una base de datos SQLite en memoria, así que se ejecutan sin MySQL y sin `.env`.
+
+## 6. README
+- Encabezado ordenado, estructura de carpetas, tabla de principios de POO y comandos para Windows (`py`).
+- Nota sobre `--default-character-set=utf8mb4`, necesaria para que la ñ y los tildes se guarden bien.
+- El usuario de MySQL se crea copiando los comandos, **sin editar el script**, para que ninguna contraseña llegue a GitHub.
+
+---
+
+# Versión 1.1 (18-10-2026): corrección de errores
 
 ## ⚠️ Lo que el grupo tiene que hacer
 1. **Recrear la base de datos**: `DROP DATABASE gestion_escolar;` y ejecutar los scripts de `datos/sql/` en orden de fecha.
@@ -52,7 +106,7 @@
 - `requirements.txt` quedó solo con lo que se usa. Se quitaron 8 librerías que no se usaban (menos superficie de ataque).
 - El README explica cómo crear el usuario con privilegios mínimos sobre la base correcta (`gestion_escolar`).
 
-## 7. Diagrama UML (`diagrama/ev1poo.drawio`)
+## 7. Diagrama UML (`ev1poo.drawio`)
 - "Clasificacion" → "Calificacion"; "periodico academico" → "Periodo Académico".
 - Pago: `idpago` → `id`, `monto: float` → `monto: int`. Estudiante: se agregó `activo: bool`.
 - La línea Estudiante–Evaluación terminaba en el texto "*" y no en la clase: se reconectó.

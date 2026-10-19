@@ -1,19 +1,10 @@
-from peewee import PeeweeException
 from datos.modelos import Curso
-from datos.auxiliar import registrar_error
+from datos.repositorio.repositorio_base import RepositorioBase
 
 
-def listado_cursos():
-    try:
-        return list(Curso.select())
-    except PeeweeException as error:
-        registrar_error(error)
-        return []
+class RepositorioCursos(RepositorioBase):
+    modelo = Curso
 
-
-def guardar_curso(nombre, nivel, jornada, periodo=None):
-    try:
-        return Curso.create(nombre=nombre, nivel=nivel, jornada=jornada, periodo=periodo)
-    except PeeweeException as error:
-        registrar_error(error)
-        return None
+    def existe_nombre(self, nombre, periodo, excluir_id=None):
+        """True si ya hay un curso con ese nombre en el mismo periodo."""
+        return self._existe((Curso.nombre == nombre) & (Curso.periodo == periodo), excluir_id)
