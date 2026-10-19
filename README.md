@@ -63,7 +63,6 @@ SOURCE datos/sql/2026.09.21_10.30_Insert_Estudiantes.sql;
 SOURCE datos/sql/2026.10.09_09.45_Alter_Estudiantes.sql;
 SOURCE datos/sql/2026.10.16_10.10_Alter_Asistencias.sql;
 ```
-> Si la base ya estaba creada con la versión anterior (tabla `periodicos_academicos`), primero la borramos con `DROP DATABASE gestion_escolar;` y luego ejecutamos todos los scripts de nuevo.
 
 ### 2. Crear el usuario de la aplicación
 El script `2026.10.18_20.00_Usuario_Aplicacion.sql` muestra cómo crear el usuario. **No editamos ese archivo**, para que la contraseña no termine en GitHub. En su lugar, copiamos estos comandos en MySQL poniendo nuestra propia contraseña:
@@ -84,7 +83,6 @@ DB_PORT=3306
 DB_USER=usuario_escolar
 DB_PASSWORD=tu_contraseña
 ```
-El archivo `.env` está incluido en `.gitignore`, así que **nunca se sube a GitHub**.
 
 ---
 
