@@ -28,3 +28,9 @@ def formatear_porcentaje(valor):
 def texto_o_guion(texto):
     """Muestra '-' cuando un campo opcional está vacío."""
     return texto if texto else '-'
+
+
+def formatear_decimal(valor, decimales=2):
+    """Decimal('39512.334') -> '39.512,33' (formato chileno: punto de miles y coma decimal)."""
+    texto = f'{valor:,.{decimales}f}'  # '39,512.33'
+    return texto.replace(',', '#').replace('.', ',').replace('#', '.')

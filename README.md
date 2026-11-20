@@ -89,7 +89,7 @@ El archivo `.env` está incluido en `.gitignore`, así que **nunca se sube a Git
 ---
 
 ## Control de dependencias (`requirements.txt`)
-Para instalar todas las librerías necesarias (Peewee, PyMySQL, PrettyTable, python-decouple, pytest y cryptography), ejecutamos en la terminal:
+Para instalar todas las librerías necesarias (Peewee, PyMySQL, PrettyTable, python-decouple, requests, pytest y cryptography), ejecutamos en la terminal:
 ```bash
 pip install -r requirements.txt
 ```
@@ -104,3 +104,46 @@ Para ejecutar las pruebas automáticas (usan una base de datos de prueba en memo
 pytest
 ```
 > **En Windows**, si `python` o `pip` no se reconocen, usamos `py main.py`, `py -m pip install -r requirements.txt` y `py -m pytest`.
+
+---
+
+## Evaluación 3: servicios externos y seguridad
+El sistema ahora consume dos APIs externas con la librería oficial **requests**, y solo se puede usar después de **iniciar sesión**.
+
+| API | Para qué la usa el colegio | Llave |
+|---|---|---|
+| [mindicador.cl](https://mindicador.cl) | UF, dólar, euro y UTM del día: cobrar mensualidades en UF y ver los pagos en otras monedas | No necesita |
+| [OpenWeatherMap](https://openweathermap.org/current) | Clima actual para decidir si una clase de educación física o una salida se hace al aire libre | Sí (`OPENWEATHER_API_KEY` en el `.env`) |
+
+### Puesta en marcha
+1. Crear la tabla de usuarios: `SOURCE datos/sql/2026.11.20_10.00_Tabla_Usuarios.sql;`
+2. Instalar `requests`: `pip install -r requirements.txt`
+3. Crear una cuenta gratis en OpenWeatherMap, copiar la llave en el `.env` como `OPENWEATHER_API_KEY=...` (ver `.env.example`). La llave nueva puede demorar hasta 2 horas en activarse.
+4. Crear un usuario: `python crear_usuario.py`
+5. Iniciar el sistema: `python main.py`
+
+### Dónde está cada cosa
+```
+datos/servicios/           ← NUEVO: consumo de APIs
+│   ├── cliente_http.py         requests con timeout, reintentos y revisión de códigos HTTP
+│   ├── servicio_indicadores.py mindicador.cl (UF, dólar, euro, UTM)
+│   ├── servicio_clima.py       OpenWeatherMap
+│   ├── cache_local.py          último valor válido en datos/cache/indicadores.json
+│   └── errores_servicio.py     jerarquía de excepciones y registro sin llaves
+datos/auxiliares/seguridad.py   hash de contraseñas (PBKDF2-HMAC-SHA256 con sal)
+datos/modelos/usuario.py        tabla usuarios
+negocio/negocio_autenticacion.py  login, bloqueo por intentos y clase Sesion
+negocio/negocio_servicios.py      conversiones de moneda y recomendación según el clima
+presentacion/presentacion_login.py      pantalla de inicio de sesión
+presentacion/presentacion_servicios.py  menú "Servicios externos"
+crear_usuario.py                script para crear usuarios
+BITACORA_IA.md                  uso de IA: prompts, problemas encontrados y ajustes
+```
+
+### Medidas de seguridad
+- **Contraseñas:** solo se guarda su hash con sal (PBKDF2, 600.000 iteraciones); se comparan con `hmac.compare_digest`. La contraseña no se ve al escribirla (`getpass`).
+- **Login:** el mismo mensaje si el usuario no existe o si la clave está mal; la cuenta se bloquea 5 minutos tras 3 intentos fallidos.
+- **Acceso:** sin sesión no se llega al menú, y además cada función que consume una API exige la sesión (`Sesion.exigir()`).
+- **Entradas:** ciudad, país, moneda, montos y credenciales se validan antes de llamar a la API. La moneda se revisa contra una lista blanca.
+- **Secretos:** la llave de la API y la contraseña de MySQL están en el `.env` (fuera de GitHub). Si un error trae la URL con la llave, se oculta (`appid=***`) antes de guardarlo en `errores.log`.
+- **Errores:** `timeout` en todas las solicitudes, un reintento ante fallas pasajeras, un error distinto por cada código HTTP, y mensajes para el usuario sin detalles técnicos. Si mindicador.cl no responde, se usa el último valor guardado y se avisa de qué fecha es.

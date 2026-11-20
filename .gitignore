@@ -10,3 +10,6 @@ __pycache__/
 .venv/
 venv/
 .pytest_cache/
+
+# Últimos valores de las APIs guardados localmente (Evaluación 3)
+datos/cache/

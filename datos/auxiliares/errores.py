@@ -19,6 +19,11 @@ class ErrorDatos(Exception):
     """Error de la capa de datos con un mensaje apto para mostrar al usuario."""
 
 
+def obtener_logger():
+    """Registro de errores compartido (lo usan también los servicios externos)."""
+    return _logger
+
+
 def registrar_error(error):
     """Guarda el detalle técnico del error en errores.log."""
     _logger.error('Error de base de datos: %s', error, exc_info=error)

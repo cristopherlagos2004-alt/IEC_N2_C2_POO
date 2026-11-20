@@ -8,6 +8,7 @@ from negocio.negocio_evaluaciones import NegocioEvaluaciones
 from negocio.negocio_calificaciones import NegocioCalificaciones
 from negocio.negocio_asistencias import NegocioAsistencias
 from negocio.negocio_pagos import NegocioPagos
+from negocio.negocio_servicios import NegocioServiciosExternos
 from presentacion.menu_autor import solicitar_datos_autor
 from presentacion.menu_base import MenuBase
 from presentacion.presentacion_periodos import MenuPeriodos
@@ -20,9 +21,10 @@ from presentacion.presentacion_evaluaciones import MenuEvaluaciones
 from presentacion.presentacion_calificaciones import MenuCalificaciones
 from presentacion.presentacion_asistencias import MenuAsistencias
 from presentacion.presentacion_pagos import MenuPagos
+from presentacion.presentacion_servicios import MenuServiciosExternos
 
 NOMBRE_APP = 'Sistema de Gestión Escolar - INACAP'
-VERSION_APP = 'v2.0'
+VERSION_APP = 'v3.0'
 
 
 class MenuPrincipal(MenuBase):
@@ -32,8 +34,9 @@ class MenuPrincipal(MenuBase):
     los trata igual (llama a su método mostrar()); cada uno responde a su manera.
     """
 
-    def __init__(self):
-        super().__init__(f'{NOMBRE_APP} {VERSION_APP}', texto_salida='Salir')
+    def __init__(self, sesion):
+        super().__init__(f'{NOMBRE_APP} {VERSION_APP}', texto_salida='Cerrar sesión y salir')
+        self.__sesion = sesion
 
         # Una sola instancia de cada clase de negocio, compartida entre los menús
         periodos = NegocioPeriodos()
@@ -43,6 +46,8 @@ class MenuPrincipal(MenuBase):
         apoderados = NegocioApoderados()
         estudiantes = NegocioEstudiantes()
         evaluaciones = NegocioEvaluaciones()
+        # Evaluación 3: recibe la sesión para exigirla antes de consumir las APIs
+        servicios = NegocioServiciosExternos(sesion)
 
         self.__submenus = [
             MenuEstudiantes(estudiantes, cursos, apoderados),
@@ -54,7 +59,8 @@ class MenuPrincipal(MenuBase):
             MenuEvaluaciones(evaluaciones, asignaturas),
             MenuCalificaciones(NegocioCalificaciones(), estudiantes, evaluaciones),
             MenuAsistencias(NegocioAsistencias(), estudiantes),
-            MenuPagos(NegocioPagos(), apoderados),
+            MenuPagos(NegocioPagos(), apoderados, servicios),
+            MenuServiciosExternos(servicios),
         ]
 
     def opciones(self):
@@ -65,5 +71,6 @@ class MenuPrincipal(MenuBase):
         # y el mensaje de salida; el resto lo hace la versión de MenuBase.
         print()
         solicitar_datos_autor()
+        print(f'Sesión iniciada como: {self.__sesion.usuario.nombre_usuario}')
         super().mostrar()
         print('Saliendo del Sistema')

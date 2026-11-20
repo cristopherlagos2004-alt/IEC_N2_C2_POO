@@ -52,3 +52,20 @@ def pedir(texto, actual=SIN_VALOR):
 
 def confirmar(pregunta):
     return input(f'{pregunta} (s/n): ').strip().lower() in ('s', 'si', 'sí')
+
+
+def pedir_valido(texto, validar):
+    """Pide un dato hasta que la función validar() lo acepte (no lanza ValueError).
+
+    ENTER sin escribir nada en un dato obligatorio también muestra el motivo.
+    Escribir 'c' cancela la operación.
+    """
+    while True:
+        valor = input(f'{texto} (c = cancelar): ').strip()
+        if valor.lower() == 'c':
+            raise OperacionCancelada('Operación cancelada.')
+        try:
+            validar(valor)
+            return valor
+        except ValueError as error:
+            print(f'  >> {error} Intente nuevamente.')

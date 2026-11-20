@@ -215,3 +215,92 @@ def validar_fecha_hasta_hoy(texto, campo='La fecha') -> date:
     if fecha > date.today():
         raise ValueError(f'{campo} no puede ser una fecha futura.')
     return fecha
+
+
+# ---------- Inicio de sesión (Evaluación 3) ----------
+
+PATRON_USUARIO = re.compile(r'^[a-z0-9._-]{4,30}$')
+LARGO_MAXIMO_CONTRASENA = 128
+
+
+def validar_nombre_usuario(texto) -> str:
+    """Nombre de usuario: 4 a 30 caracteres, minúsculas, números, punto, guion o guion bajo."""
+    usuario = _limpiar(texto).lower()
+    if not usuario:
+        raise ValueError('El usuario no puede estar vacío.')
+    if not PATRON_USUARIO.match(usuario):
+        raise ValueError('El usuario debe tener de 4 a 30 caracteres: letras sin tilde, '
+                         'números, punto, guion o guion bajo.')
+    return usuario
+
+
+def validar_contrasena_ingresada(texto) -> str:
+    """Contraseña escrita al iniciar sesión. No se le quitan espacios: son parte de ella."""
+    contrasena = '' if texto is None else str(texto)
+    if not contrasena.strip():
+        raise ValueError('La contraseña no puede estar vacía.')
+    if len(contrasena) > LARGO_MAXIMO_CONTRASENA:
+        # Límite para que nadie mande un texto gigante que haga lento el cálculo del hash
+        raise ValueError('La contraseña es demasiado larga.')
+    return contrasena
+
+
+def validar_contrasena_nueva(texto, usuario='') -> str:
+    """Contraseña al crear un usuario: mínimo 8 caracteres, con letras y números."""
+    contrasena = validar_contrasena_ingresada(texto)
+    if len(contrasena) < 8:
+        raise ValueError('La contraseña debe tener al menos 8 caracteres.')
+    if not any(c.isalpha() for c in contrasena) or not any(c.isdigit() for c in contrasena):
+        raise ValueError('La contraseña debe tener letras y números.')
+    if usuario and usuario.lower() in contrasena.lower():
+        raise ValueError('La contraseña no puede contener el nombre de usuario.')
+    return contrasena
+
+
+# ---------- Consultas a servicios externos (Evaluación 3) ----------
+
+PATRON_PAIS = re.compile(r'^[A-Z]{2}$')
+
+# Monedas que acepta el sistema. Lista blanca: cualquier otra cosa se rechaza
+# antes de armar la URL de la API. Se aceptan varias formas de escribir cada una.
+MONEDAS = {
+    'uf': 'uf',
+    'dolar': 'dolar', 'dólar': 'dolar', 'usd': 'dolar',
+    'euro': 'euro', 'eur': 'euro',
+    'utm': 'utm',
+}
+
+
+def validar_ciudad(texto) -> str:
+    """Nombre de ciudad: 2 a 50 caracteres; letras (con tildes), espacios, punto, guion o apóstrofe.
+
+    No se aceptan comas: la API del clima usa la coma para separar ciudad y país
+    ("Temuco,CL"), así que una coma permitiría cambiar el país de la consulta.
+    El país se pide aparte y se valida con validar_codigo_pais().
+    """
+    ciudad = ' '.join(_limpiar(texto).split())
+    if not ciudad:
+        raise ValueError('La ciudad no puede estar vacía.')
+    if not 2 <= len(ciudad) <= 50:
+        raise ValueError('La ciudad debe tener entre 2 y 50 caracteres.')
+    if not all(c.isalpha() or c in " .'-" for c in ciudad):
+        raise ValueError('La ciudad solo puede tener letras, espacios, puntos o guiones.')
+    return ciudad.title()
+
+
+def validar_codigo_pais(texto, por_defecto='CL') -> str:
+    """Código de país de 2 letras (ISO 3166), por ejemplo CL, AR, PE. Vacío = Chile."""
+    pais = _limpiar(texto).upper()
+    if not pais:
+        return por_defecto
+    if not PATRON_PAIS.match(pais):
+        raise ValueError('El país debe ser un código de 2 letras (ej: CL, AR, PE).')
+    return pais
+
+
+def validar_moneda(texto) -> str:
+    """Devuelve el código de la moneda para la API ('uf', 'dolar', 'euro' o 'utm')."""
+    moneda = _limpiar(texto).lower()
+    if moneda not in MONEDAS:
+        raise ValueError('La moneda debe ser UF, dólar (USD), euro (EUR) o UTM.')
+    return MONEDAS[moneda]

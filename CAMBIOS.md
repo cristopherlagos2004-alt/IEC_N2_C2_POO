@@ -1,5 +1,23 @@
 # Cambios realizados
 
+# Versión 3.0 (20-11-2026): Evaluación 3 – servicios externos y seguridad
+
+## ⚠️ Lo que hay que hacer
+1. Crear la tabla de usuarios: `SOURCE datos/sql/2026.11.20_10.00_Tabla_Usuarios.sql;` (no hay que recrear la base de datos).
+2. `pip install -r requirements.txt` (se agregó `requests`).
+3. Agregar `OPENWEATHER_API_KEY` al `.env` (ver `.env.example`).
+4. Crear un usuario con `python crear_usuario.py`.
+
+## Nuevo
+- **Inicio de sesión** antes del menú principal, con contraseñas guardadas como hash PBKDF2 y bloqueo tras 3 intentos fallidos.
+- **Menú "Servicios externos"**: indicadores del día (UF, dólar, euro, UTM), conversión de montos y clima para actividades al aire libre.
+- **Pagos**: dos opciones nuevas, "Ver un pago en UF / dólar / euro / UTM" y "Registrar pago con monto en UF / dólar / euro / UTM".
+- Carpeta `datos/servicios/` con el consumo de APIs (timeout, reintentos, códigos HTTP, caché local).
+- 80 pruebas nuevas (127 en total), sin necesidad de internet.
+- `BITACORA_IA.md` con el registro del uso de IA.
+
+---
+
 # Versión 2.0 (19-10-2026): ajuste a la pauta de la Evaluación 2
 
 **No hay que recrear la base de datos**: las tablas no cambiaron. Basta con actualizar el código.
