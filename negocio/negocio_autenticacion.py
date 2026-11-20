@@ -2,9 +2,8 @@
 from datetime import datetime, timedelta
 
 from datos.auxiliares.errores import ErrorDatos
-from datos.auxiliares.seguridad import generar_hash, verificar_contrasena, hash_falso
-from datos.auxiliares.validaciones import (validar_nombre_usuario, validar_contrasena_ingresada,
-                                           validar_contrasena_nueva)
+from datos.auxiliares.seguridad import verificar_contrasena, hash_falso
+from datos.auxiliares.validaciones import validar_nombre_usuario, validar_contrasena_ingresada
 from datos.repositorio.repositorio_usuarios import RepositorioUsuarios
 
 MAX_INTENTOS = 3
@@ -97,16 +96,4 @@ class NegocioAutenticacion:
     def cerrar_sesion(self):
         self.__sesion.cerrar()
 
-    def crear_usuario(self, nombre_texto, contrasena_texto):
-        """Crea un usuario guardando solo el hash. Devuelve (exito, mensaje)."""
-        try:
-            nombre = validar_nombre_usuario(nombre_texto)
-            contrasena = validar_contrasena_nueva(contrasena_texto, nombre)
-        except ValueError as error:
-            return False, str(error)
-        if self.__repositorio.existe_nombre(nombre):
-            return False, f'Ya existe el usuario "{nombre}".'
-        usuario = self.__repositorio.modelo(nombre_usuario=nombre,
-                                            hash_contrasena=generar_hash(contrasena))
-        self.__repositorio.guardar(usuario)
-        return True, f'Se creó el usuario "{nombre}".'
+    # Crear, modificar y eliminar usuarios está en negocio_usuarios.NegocioUsuarios.

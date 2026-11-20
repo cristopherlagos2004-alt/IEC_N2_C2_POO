@@ -10,6 +10,7 @@ from datos.auxiliares.validaciones import (validar_nombre_usuario, validar_contr
 from datos.modelos import Usuario
 from negocio.negocio_autenticacion import (NegocioAutenticacion, Sesion, ErrorAcceso,
                                            MENSAJE_CREDENCIALES)
+from negocio.negocio_usuarios import NegocioUsuarios
 
 CLAVE = 'Colegio2026'
 # Hash PBKDF2 como los que guardaba la versión anterior (antes de bcrypt)
@@ -103,21 +104,31 @@ def test_contrasena_nueva_debil(clave):
 
 @pytest.fixture
 def autenticacion(base_prueba):
-    negocio = NegocioAutenticacion(Sesion())
-    exito, mensaje = negocio.crear_usuario('admin', CLAVE)
+    exito, mensaje = NegocioUsuarios(Sesion()).crear_primer_usuario(
+        {'nombre_usuario': 'admin', 'contrasena': CLAVE})
     assert exito, mensaje
-    return negocio
+    return NegocioAutenticacion(Sesion())
 
 
 def test_crear_usuario_guarda_solo_hash(autenticacion):
     usuario = Usuario.get(Usuario.nombre_usuario == 'admin')
     assert usuario.hash_contrasena != CLAVE
+    assert es_hash_bcrypt(usuario.hash_contrasena)
     assert verificar_contrasena(CLAVE, usuario.hash_contrasena)
 
 
-def test_no_permite_usuario_repetido(autenticacion):
-    exito, mensaje = autenticacion.crear_usuario('ADMIN', 'OtraClave99')
-    assert not exito and 'Ya existe' in mensaje
+def test_usuario_con_hash_pbkdf2_antiguo_no_entra(autenticacion):
+    # Los usuarios creados antes de bcrypt deben volver a crearse (ver README)
+    Usuario.update(hash_contrasena=HASH_PBKDF2).execute()
+    exito, mensaje = autenticacion.iniciar_sesion('admin', CLAVE)
+    assert not exito and mensaje == MENSAJE_CREDENCIALES
+
+
+def test_mensaje_igual_con_contrasena_larga(autenticacion):
+    # Pasarse de 72 bytes da un aviso de formato, sin revelar si el usuario existe
+    _, existe = autenticacion.iniciar_sesion('admin', 'a' * 80)
+    _, no_existe = autenticacion.iniciar_sesion('noexiste', 'a' * 80)
+    assert existe == no_existe
 
 
 def test_login_correcto_inicia_sesion(autenticacion):

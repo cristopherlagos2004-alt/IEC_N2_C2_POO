@@ -9,6 +9,7 @@ from negocio.negocio_calificaciones import NegocioCalificaciones
 from negocio.negocio_asistencias import NegocioAsistencias
 from negocio.negocio_pagos import NegocioPagos
 from negocio.negocio_servicios import NegocioServiciosExternos
+from negocio.negocio_usuarios import NegocioUsuarios
 from presentacion.menu_autor import solicitar_datos_autor
 from presentacion.menu_base import MenuBase
 from presentacion.presentacion_periodos import MenuPeriodos
@@ -22,6 +23,7 @@ from presentacion.presentacion_calificaciones import MenuCalificaciones
 from presentacion.presentacion_asistencias import MenuAsistencias
 from presentacion.presentacion_pagos import MenuPagos
 from presentacion.presentacion_servicios import MenuServiciosExternos
+from presentacion.presentacion_usuarios import MenuUsuarios
 
 NOMBRE_APP = 'Sistema de Gestión Escolar - INACAP'
 VERSION_APP = 'v3.0'
@@ -61,6 +63,8 @@ class MenuPrincipal(MenuBase):
             MenuAsistencias(NegocioAsistencias(), estudiantes),
             MenuPagos(NegocioPagos(), apoderados, servicios),
             MenuServiciosExternos(servicios),
+            # Evaluación 3: gestión de usuarios (también exige la sesión)
+            MenuUsuarios(NegocioUsuarios(sesion)),
         ]
 
     def opciones(self):

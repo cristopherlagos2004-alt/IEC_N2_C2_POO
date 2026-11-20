@@ -18,5 +18,10 @@ class RepositorioUsuarios(RepositorioBase):
         return self.ejecutar(
             lambda: Usuario.select().where(Usuario.nombre_usuario == nombre_usuario).first())
 
-    def existe_nombre(self, nombre_usuario):
-        return self._existe(Usuario.nombre_usuario == nombre_usuario)
+    def existe_nombre(self, nombre_usuario, excluir_id=None):
+        """True si otro usuario ya tiene ese nombre (excluir_id: el que se está actualizando)."""
+        return self._existe(Usuario.nombre_usuario == nombre_usuario, excluir_id)
+
+    def contar(self):
+        """Cantidad de usuarios (para no dejar el sistema sin ninguno)."""
+        return self.ejecutar(Usuario.select().count)
