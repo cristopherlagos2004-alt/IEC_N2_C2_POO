@@ -7,11 +7,11 @@ de datos solo se guarda su hash. Por eso los usuarios se crean con este script
 y no con un INSERT escrito a mano.
 """
 import sys
-from getpass import getpass
 
 from datos.conexion import Conexion
 from datos.auxiliares.errores import ErrorDatos
 from negocio.negocio_autenticacion import NegocioAutenticacion, Sesion
+from presentacion.consola import OperacionCancelada, pedir_contrasena
 
 
 def main():
@@ -25,13 +25,13 @@ def main():
         print('Crear usuario del sistema')
         print('La contraseña debe tener al menos 8 caracteres, con letras y números.\n')
         nombre = input('Nombre de usuario: ')
-        contrasena = getpass('Contraseña: ')
-        if contrasena != getpass('Repita la contraseña: '):
+        contrasena = pedir_contrasena('Contraseña')
+        if contrasena != pedir_contrasena('Repita la contraseña'):
             print('Las contraseñas no coinciden.')
             sys.exit(1)
         _, mensaje = NegocioAutenticacion(Sesion()).crear_usuario(nombre, contrasena)
         print(mensaje)
-    except ErrorDatos as error:
+    except (ErrorDatos, OperacionCancelada) as error:
         print(error)
     except (KeyboardInterrupt, EOFError):
         print('\nCancelado.')

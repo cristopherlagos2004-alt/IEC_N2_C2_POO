@@ -3,7 +3,8 @@ from datetime import datetime, timedelta
 
 import pytest
 
-from datos.auxiliares.seguridad import generar_hash, verificar_contrasena
+from datos.auxiliares import seguridad
+from datos.auxiliares.seguridad import generar_hash, verificar_contrasena, es_hash_bcrypt
 from datos.auxiliares.validaciones import (validar_nombre_usuario, validar_contrasena_nueva,
                                            validar_contrasena_ingresada)
 from datos.modelos import Usuario
@@ -11,14 +12,24 @@ from negocio.negocio_autenticacion import (NegocioAutenticacion, Sesion, ErrorAc
                                            MENSAJE_CREDENCIALES)
 
 CLAVE = 'Colegio2026'
+# Hash PBKDF2 como los que guardaba la versión anterior (antes de bcrypt)
+HASH_PBKDF2 = ('pbkdf2_sha256$600000$c2FsLWRlLXBydWViYQ==$'
+               'aGFzaC1kZS1wcnVlYmEtY29uLTMyLWJ5dGVzLi4uLi4=')
 
 
-# ----- Hash -----
+# ----- Hash bcrypt -----
 
 def test_hash_no_guarda_la_contrasena():
     hash_guardado = generar_hash(CLAVE)
     assert CLAVE not in hash_guardado
-    assert hash_guardado.startswith('pbkdf2_sha256$600000$')
+    assert hash_guardado.startswith('$2b$')   # formato bcrypt
+    assert len(hash_guardado) == 60
+    assert es_hash_bcrypt(hash_guardado)
+
+
+def test_costo_por_defecto():
+    # Las pruebas usan costo 4 para ir rápido (conftest.py); el programa usa 12
+    assert seguridad.COSTO_PRODUCCION == 12
 
 
 def test_misma_contrasena_distinto_hash():
@@ -32,9 +43,30 @@ def test_verificar_contrasena():
     assert not verificar_contrasena('colegio2026', hash_guardado)  # distingue mayúsculas
 
 
-@pytest.mark.parametrize('hash_danado', ['', 'texto', 'md5$1$a$b', 'pbkdf2_sha256$x$y$z', None])
-def test_hash_danado_no_lanza_error(hash_danado):
+def test_verificar_con_tildes_y_enie():
+    clave = 'Ñandú2026 café'
+    assert verificar_contrasena(clave, generar_hash(clave))
+
+
+@pytest.mark.parametrize('hash_danado', ['', 'texto', 'md5$1$a$b', '$2b$12$corto', None, HASH_PBKDF2])
+def test_hash_danado_o_antiguo_no_lanza_error(hash_danado):
+    # Un hash PBKDF2 de la versión anterior ya no sirve: se rechaza sin error
     assert not verificar_contrasena(CLAVE, hash_danado)
+    assert not es_hash_bcrypt(hash_danado)
+
+
+def test_limite_72_bytes_en_el_hash():
+    assert verificar_contrasena('a' * 72, generar_hash('a' * 72))
+    with pytest.raises(ValueError):
+        generar_hash('a' * 73)
+    # Al verificar no lanza error: simplemente no coincide
+    assert not verificar_contrasena('a' * 73, generar_hash('a' * 72))
+
+
+def test_no_ignora_lo_que_pasa_de_72_bytes():
+    # Sin la validación, bcrypt trataría igual "72 aes + X" y "72 aes + Y"
+    with pytest.raises(ValueError):
+        validar_contrasena_ingresada('a' * 72 + 'X')
 
 
 # ----- Validaciones de credenciales -----
@@ -49,10 +81,16 @@ def test_usuario_invalido(usuario):
         validar_nombre_usuario(usuario)
 
 
-@pytest.mark.parametrize('clave', ['', '    ', 'x' * 129])
+@pytest.mark.parametrize('clave', ['', '    ', 'x' * 73, 'ñ' * 37, 'ab\x00cd', 'clave\tcon tab'])
 def test_contrasena_ingresada_invalida(clave):
+    # 'ñ' * 37 son 37 letras pero 74 bytes; el byte nulo y el Tab son caracteres de control
     with pytest.raises(ValueError):
         validar_contrasena_ingresada(clave)
+
+
+@pytest.mark.parametrize('clave', ['x' * 72, 'ñ' * 36, 'con espacios 1'])
+def test_contrasena_ingresada_valida(clave):
+    assert validar_contrasena_ingresada(clave) == clave
 
 
 @pytest.mark.parametrize('clave', ['corta1', 'sololetras', '12345678', 'admin1234'])

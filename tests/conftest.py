@@ -9,7 +9,15 @@ from datetime import date
 import pytest
 from peewee import SqliteDatabase
 
+from datos.auxiliares import seguridad
 from datos.modelos import MODELOS, PeriodoAcademico, Curso, Docente, Estudiante
+
+
+@pytest.fixture(autouse=True)
+def bcrypt_rapido(monkeypatch):
+    """bcrypt con costo 12 tarda ~0,3 s por hash; con costo 4 (el mínimo), milisegundos.
+    El algoritmo es el mismo, solo cambia cuántas vueltas da. Se aplica a todas las pruebas."""
+    monkeypatch.setattr(seguridad, 'COSTO', 4)
 
 
 @pytest.fixture

@@ -1,4 +1,4 @@
-"""Hash de contraseñas con PBKDF2-HMAC-SHA256 (solo librería estándar de Python).
+"""Hash de contraseñas con bcrypt (requisito de la Evaluación 3).
 
 ¿Por qué hash y no cifrado?
 - Un CIFRADO se puede revertir con una llave: si alguien roba la llave, obtiene
@@ -6,59 +6,75 @@
 - Un HASH no se puede revertir. Para revisar una contraseña se vuelve a calcular
   el hash de lo que escribió el usuario y se compara con el guardado.
 
-¿Por qué PBKDF2 y no un simple SHA-256?
+¿Por qué bcrypt y no un simple SHA-256?
 - SHA-256 es muy rápido: un atacante puede probar miles de millones de
-  contraseñas por segundo. PBKDF2 repite el cálculo cientos de miles de veces
-  (ITERACIONES), así cada intento le cuesta mucho más.
-- La SAL es un valor aleatorio distinto para cada usuario. Así, dos usuarios con
+  contraseñas por segundo. bcrypt es lento A PROPÓSITO: el COSTO indica cuántas
+  vueltas da (2^12 = 4096 con costo 12), así cada intento le cuesta mucho más.
+- bcrypt genera una SAL aleatoria distinta para cada hash. Así, dos usuarios con
   la misma contraseña tienen hashes distintos y no sirven tablas precalculadas.
 
-Formato guardado en la base de datos (un solo texto):
-    pbkdf2_sha256$600000$<sal en base64>$<hash en base64>
-Guardar el algoritmo y las iteraciones permite subirlas en el futuro sin
-romper las contraseñas que ya existen.
+Formato guardado en la base de datos (60 caracteres, un solo texto):
+    $2b$12$<sal de 22 caracteres><hash de 31 caracteres>
+     |   |
+     |   +-- costo (12)
+     +------ versión del algoritmo
+La sal y el costo van dentro del mismo texto, por eso checkpw() no necesita
+que se los pasemos aparte.
+
+Límite de 72 bytes: bcrypt solo usa los primeros 72 bytes de la contraseña.
+La versión 5 de la librería lanza ValueError si se pasa de eso, así que se
+valida antes (validaciones.validar_contrasena_ingresada) y aquí se revisa otra
+vez por seguridad. Ojo: son BYTES, no letras: la ñ y las tildes ocupan 2.
 """
-import base64
-import hashlib
-import hmac
 import secrets
 
-ALGORITMO = 'pbkdf2_sha256'
-ITERACIONES = 600_000  # valor recomendado por OWASP (2023) para PBKDF2-HMAC-SHA256
-LARGO_SAL = 16         # bytes
+import bcrypt
+
+COSTO_PRODUCCION = 12    # ~0,3 s por hash en un MacBook Air 2015: lento para un atacante, aceptable para un login
+COSTO = COSTO_PRODUCCION  # las pruebas lo bajan a 4 (el mínimo) para correr rápido; ver tests/conftest.py
+LARGO_MAXIMO_BYTES = 72  # límite propio de bcrypt
+CODIFICACION = 'utf-8'
 
 
-def _calcular(contrasena: str, sal: bytes, iteraciones: int) -> bytes:
-    return hashlib.pbkdf2_hmac('sha256', contrasena.encode('utf-8'), sal, iteraciones)
+def _a_bytes(contrasena: str) -> bytes:
+    """bcrypt trabaja con bytes. Lanza ValueError si pasa de 72 bytes."""
+    clave = contrasena.encode(CODIFICACION)
+    if len(clave) > LARGO_MAXIMO_BYTES:
+        raise ValueError(f'La contraseña no puede ocupar más de {LARGO_MAXIMO_BYTES} bytes.')
+    return clave
 
 
 def generar_hash(contrasena: str) -> str:
-    """Devuelve el texto que se guarda en la base de datos (nunca la contraseña)."""
-    sal = secrets.token_bytes(LARGO_SAL)  # secrets: aleatorio seguro (random no lo es)
-    resumen = _calcular(contrasena, sal, ITERACIONES)
-    return '$'.join([ALGORITMO, str(ITERACIONES),
-                     base64.b64encode(sal).decode('ascii'),
-                     base64.b64encode(resumen).decode('ascii')])
+    """Devuelve el texto que se guarda en la base de datos (nunca la contraseña).
+
+    bcrypt.gensalt() crea una sal aleatoria nueva y bcrypt.hashpw() calcula el hash.
+    Se lee COSTO al momento de llamar (no al importar) para que las pruebas
+    puedan usar un costo bajo y correr rápido.
+    """
+    resumen = bcrypt.hashpw(_a_bytes(contrasena), bcrypt.gensalt(rounds=COSTO))
+    return resumen.decode('ascii')
 
 
 def verificar_contrasena(contrasena: str, hash_guardado: str) -> bool:
     """True si la contraseña corresponde al hash guardado.
 
-    Si el hash guardado está dañado o tiene otro formato, devuelve False
-    (no lanza error, para no dar pistas a quien intenta entrar).
+    bcrypt.checkpw() saca la sal y el costo del hash guardado, recalcula y
+    compara en tiempo constante (no se puede adivinar midiendo cuánto tarda).
+    Si el hash guardado está dañado o es de otro algoritmo (por ejemplo, un hash
+    PBKDF2 de la versión anterior), devuelve False en vez de lanzar un error,
+    para no dar pistas a quien intenta entrar.
     """
     try:
-        algoritmo, iteraciones, sal_b64, resumen_b64 = hash_guardado.split('$')
-        if algoritmo != ALGORITMO:
-            return False
-        sal = base64.b64decode(sal_b64, validate=True)
-        esperado = base64.b64decode(resumen_b64, validate=True)
-        calculado = _calcular(contrasena, sal, int(iteraciones))
+        return bcrypt.checkpw(_a_bytes(contrasena), hash_guardado.encode('ascii'))
     except (ValueError, AttributeError, TypeError):
+        # ValueError incluye UnicodeError (texto raro) y "Invalid salt" (hash que no es bcrypt)
         return False
-    # compare_digest tarda lo mismo aunque los textos difieran al principio,
-    # así no se puede adivinar el hash midiendo cuánto demora la comparación.
-    return hmac.compare_digest(calculado, esperado)
+
+
+def es_hash_bcrypt(hash_guardado) -> bool:
+    """True si el texto tiene la forma de un hash bcrypt ($2a$, $2b$ o $2y$, 60 caracteres)."""
+    return (isinstance(hash_guardado, str) and len(hash_guardado) == 60
+            and hash_guardado[:4] in ('$2a$', '$2b$', '$2y$'))
 
 
 _hash_falso = None

@@ -1,4 +1,7 @@
 """Funciones de apoyo para leer y mostrar datos en la consola."""
+import sys
+
+import maskpass
 from prettytable import PrettyTable
 
 # Marca que indica "registro nuevo": no hay un valor actual que conservar.
@@ -52,6 +55,44 @@ def pedir(texto, actual=SIN_VALOR):
 
 def confirmar(pregunta):
     return input(f'{pregunta} (s/n): ').strip().lower() in ('s', 'si', 'sí')
+
+
+def pedir_contrasena(texto='Contraseña'):
+    """Pide una contraseña mostrando un * por cada carácter (maskpass, Evaluación 3).
+
+    Es el ÚNICO lugar del programa donde se lee una contraseña: el login, el
+    menú Usuarios y crear_usuario.py llaman a esta función.
+    - maskpass.askpass() lee tecla por tecla, así la contraseña no queda en pantalla.
+    - ESC borra lo escrito (devuelve ''), y Ctrl+C lanza KeyboardInterrupt.
+    - Si se borra con retroceso una ñ o una letra con tilde, maskpass puede dejar
+      la mitad de esa letra y falla al leerla (UnicodeDecodeError): se vuelve a pedir.
+    """
+    if not sys.stdin.isatty():
+        # maskpass necesita una terminal real (no funciona con la entrada redirigida)
+        raise OperacionCancelada('Para escribir la contraseña ejecute el programa desde una terminal.')
+    while True:
+        try:
+            return maskpass.askpass(prompt=f'{texto}: ', mask='*')
+        except UnicodeDecodeError:
+            print('  >> No se pudo leer la contraseña. Escríbala de nuevo.')
+
+
+def pedir_contrasena_nueva(validar):
+    """Pide una contraseña nueva dos veces, hasta que sea válida y ambas coincidan.
+
+    validar: función de la capa de negocio que lanza ValueError si no sirve.
+    Devuelve la contraseña (en texto) para que negocio calcule el hash.
+    """
+    while True:
+        contrasena = pedir_contrasena('Contraseña nueva')
+        try:
+            validar(contrasena)
+        except ValueError as error:
+            print(f'  >> {error} Intente nuevamente.')
+            continue
+        if contrasena == pedir_contrasena('Repita la contraseña'):
+            return contrasena
+        print('  >> Las contraseñas no coinciden. Intente nuevamente.')
 
 
 def pedir_valido(texto, validar):

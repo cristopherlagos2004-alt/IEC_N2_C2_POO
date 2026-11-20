@@ -1,5 +1,5 @@
 -- Evaluación 3: tabla de usuarios para el inicio de sesión.
--- La contraseña NUNCA se guarda: solo su hash (PBKDF2-HMAC-SHA256 con sal).
+-- La contraseña NUNCA se guarda: solo su hash bcrypt (60 caracteres, incluye la sal).
 -- Los usuarios se crean con el script crear_usuario.py (no con INSERT a mano),
 -- porque el hash lo calcula Python.
 USE gestion_escolar;

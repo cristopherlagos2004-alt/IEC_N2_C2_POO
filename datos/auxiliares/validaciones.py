@@ -220,7 +220,11 @@ def validar_fecha_hasta_hoy(texto, campo='La fecha') -> date:
 # ---------- Inicio de sesión (Evaluación 3) ----------
 
 PATRON_USUARIO = re.compile(r'^[a-z0-9._-]{4,30}$')
-LARGO_MAXIMO_CONTRASENA = 128
+# bcrypt solo usa los primeros 72 BYTES de la contraseña (no 72 letras: en UTF-8
+# la ñ y las letras con tilde ocupan 2 bytes). Si se aceptara una más larga, todo
+# lo que pase de 72 bytes se ignoraría sin aviso; por eso se rechaza.
+LARGO_MAXIMO_CONTRASENA = 72  # bytes
+LARGO_MINIMO_CONTRASENA = 8   # caracteres
 
 
 def validar_nombre_usuario(texto) -> str:
@@ -239,17 +243,21 @@ def validar_contrasena_ingresada(texto) -> str:
     contrasena = '' if texto is None else str(texto)
     if not contrasena.strip():
         raise ValueError('La contraseña no puede estar vacía.')
-    if len(contrasena) > LARGO_MAXIMO_CONTRASENA:
-        # Límite para que nadie mande un texto gigante que haga lento el cálculo del hash
-        raise ValueError('La contraseña es demasiado larga.')
+    if any(ord(c) < 32 or ord(c) == 127 for c in contrasena):
+        # Caracteres de control (Tab, Ctrl+D, el byte nulo...). bcrypt corta la
+        # contraseña en el byte nulo: "ab\0cd" valdría lo mismo que "ab".
+        raise ValueError('La contraseña no puede tener caracteres de control (Tab, Ctrl+tecla).')
+    if len(contrasena.encode('utf-8')) > LARGO_MAXIMO_CONTRASENA:
+        raise ValueError(f'La contraseña no puede ocupar más de {LARGO_MAXIMO_CONTRASENA} bytes '
+                         '(72 letras sin tilde; la ñ y cada tilde cuentan doble).')
     return contrasena
 
 
 def validar_contrasena_nueva(texto, usuario='') -> str:
-    """Contraseña al crear un usuario: mínimo 8 caracteres, con letras y números."""
+    """Contraseña al crear un usuario o cambiarla: de 8 caracteres a 72 bytes, con letras y números."""
     contrasena = validar_contrasena_ingresada(texto)
-    if len(contrasena) < 8:
-        raise ValueError('La contraseña debe tener al menos 8 caracteres.')
+    if len(contrasena) < LARGO_MINIMO_CONTRASENA:
+        raise ValueError(f'La contraseña debe tener al menos {LARGO_MINIMO_CONTRASENA} caracteres.')
     if not any(c.isalpha() for c in contrasena) or not any(c.isdigit() for c in contrasena):
         raise ValueError('La contraseña debe tener letras y números.')
     if usuario and usuario.lower() in contrasena.lower():
