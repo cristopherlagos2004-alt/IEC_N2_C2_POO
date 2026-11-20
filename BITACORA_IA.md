@@ -55,9 +55,9 @@ if login():
 | # | Problema | Riesgo | Cómo quedó en el proyecto |
 |---|---|---|---|
 | 1 | Llave de la API escrita en el código | Al subirlo a GitHub cualquiera la ve y la usa (rúbrica 3.1.2.I.7: 0 pts) | Llave en el `.env` (`OPENWEATHER_API_KEY`), leída con `python-decouple`; `.env` está en `.gitignore`. Se valida su formato (32 caracteres hex). `servicio_clima.py` |
-| 2 | Contraseñas en texto plano | Quien lea el código o la base de datos conoce todas las claves (3.1.2.I.5: nivel Inicial) | Hash PBKDF2-HMAC-SHA256 con sal aleatoria y 600.000 iteraciones. `seguridad.py` |
-| 3 | `input()` muestra la contraseña | Alguien mirando la pantalla la ve | `getpass()` |
-| 4 | Comparación con `==` | Ataque de tiempo: comparar textos se detiene en la primera letra distinta | `hmac.compare_digest` |
+| 2 | Contraseñas en texto plano | Quien lea el código o la base de datos conoce todas las claves (3.1.2.I.5: nivel Inicial) | Hash **bcrypt** con sal aleatoria y costo 12 (antes PBKDF2, ver sección 5). `seguridad.py` |
+| 3 | `input()` muestra la contraseña | Alguien mirando la pantalla la ve | `maskpass.askpass(mask="*")` (antes `getpass()`, ver sección 5) |
+| 4 | Comparación con `==` | Ataque de tiempo: comparar textos se detiene en la primera letra distinta | `bcrypt.checkpw`, que compara en tiempo constante |
 | 5 | Mensajes distintos para "no existe" y "clave mala" | Permite descubrir qué usuarios existen | Un solo mensaje: "Usuario o contraseña incorrectos" y el mismo tiempo de respuesta (`hash_falso()`) |
 | 6 | `http://` en vez de `https://` | La llave viaja sin cifrar por la red | `ClienteHttp` rechaza URLs que no sean HTTPS |
 | 7 | Ciudad pegada en la URL con f-string | El usuario puede escribir `Temuco&appid=otra` o `Temuco,AR` y cambiar la consulta | `params=` de requests (codifica el texto) + `validar_ciudad()` sin comas ni símbolos |
@@ -93,12 +93,26 @@ El código del proyecto también lo generó la IA, pero se revisó durante el de
 ---
 
 ## 4. Verificación
-- **Pruebas automáticas:** `tests/test_servicios.py` y `tests/test_seguridad.py` (80 pruebas nuevas, 127 en total) prueban sin internet los casos 200, 400, 401, 403, 404, 429, 500, 503, timeout, sin conexión, JSON dañado, llave faltante, entradas maliciosas, bloqueo de cuenta y acceso sin sesión.
+- **Pruebas automáticas:** `tests/test_servicios.py`, `tests/test_seguridad.py`, `tests/test_usuarios.py`, `tests/test_consola.py` y `tests/test_arquitectura.py` (183 en total) prueban sin internet los casos 200, 400, 401, 403, 404, 429, 500, 503, timeout, sin conexión, JSON dañado, llave faltante, entradas maliciosas, bloqueo de cuenta y acceso sin sesión.
 - **Prueba manual:** _(completar)_ ejecutar `python main.py` con internet, sin internet y con una llave mala, y anotar qué mostró el sistema.
 
 ---
 
-## 5. Mi análisis (completar con mis palabras)
+## 5. Cambio de PBKDF2 a bcrypt y de getpass a maskpass por requisito de la rúbrica del profesor
+
+**Motivo:** la indicación de la Evaluación 3 pide expresamente la librería **bcrypt** para el hash y **maskpass** para ocultar la contraseña. La versión anterior (generada con IA) usaba PBKDF2 y `getpass`, que son seguros pero no son lo que pide la rúbrica.
+
+| Antes | Ahora | Qué hubo que cuidar |
+|---|---|---|
+| `hashlib.pbkdf2_hmac` + `hmac.compare_digest` | `bcrypt.hashpw` + `bcrypt.checkpw` (costo 12) | bcrypt solo usa **72 bytes**: se valida el largo en bytes (no en letras) y se rechazan caracteres de control, porque bcrypt corta en el byte nulo (`"ab\0cd"` valdría lo mismo que `"ab"`) |
+| `getpass()` (no muestra nada) | `maskpass.askpass(mask="*")` (muestra `*`) | Si se borra una ñ o una tilde, maskpass puede dejar media letra: se captura el error y se vuelve a pedir. maskpass necesita una terminal real: si no la hay, se avisa en vez de caerse |
+| Usuarios solo con `crear_usuario.py` | Menú **Usuarios** completo | Nunca mostrar el hash, no borrar al usuario de la sesión ni al último |
+
+**Consecuencia:** los hashes PBKDF2 guardados no se pueden convertir a bcrypt (habría que conocer las contraseñas). Los usuarios antiguos se borran y se vuelven a crear (ver README). Se agregó una prueba que confirma que un hash PBKDF2 antiguo ya no permite entrar y no provoca errores.
+
+---
+
+## 6. Mi análisis (completar con mis palabras)
 
 > Esta sección la escribo yo. La rúbrica (3.1.4.I.14) evalúa que **yo** entienda el código, no la IA.
 

@@ -1,5 +1,33 @@
 # Cambios realizados
 
+# Versión 3.1 (20-11-2026): Evaluación 3 – ajuste a la rúbrica (bcrypt, maskpass y usuarios)
+
+## ⚠️ Lo que hay que hacer
+1. `source .venv/bin/activate` y `pip install -r requirements.txt` (se agregaron `bcrypt` y `maskpass`).
+2. **Recrear los usuarios**: las contraseñas guardadas con PBKDF2 ya no sirven con bcrypt (un hash no se puede convertir sin conocer la contraseña).
+   ```bash
+   mysql -u root -p -e "DELETE FROM gestion_escolar.usuarios;"
+   python3 crear_usuario.py
+   ```
+   Luego se inicia sesión y se crean los demás usuarios desde el menú **Usuarios**.
+3. No hay que recrear la base de datos: la tabla `usuarios` no cambió (`hash_contrasena VARCHAR(255)` sirve para el hash bcrypt de 60 caracteres).
+
+## Nuevo / cambiado
+- **bcrypt** (`datos/auxiliares/seguridad.py`): `bcrypt.hashpw` con `bcrypt.gensalt(rounds=12)` y `bcrypt.checkpw` reemplazan a PBKDF2. Un hash antiguo o dañado se rechaza sin lanzar error.
+- **Límite de 72 bytes** (`validaciones.py`): bcrypt solo usa los primeros 72 bytes, así que se rechazan contraseñas más largas (contando bytes: la ñ y las tildes ocupan 2). También se rechazan caracteres de control (bcrypt corta la contraseña en el byte nulo).
+- **maskpass** (`presentacion/consola.py`): `pedir_contrasena()` usa `maskpass.askpass(mask="*")` y es el único lugar donde se lee una contraseña (login, menú Usuarios y `crear_usuario.py`). Se eliminó `getpass`.
+- **Menú "Usuarios"** con Listar, Registrar, Buscar, Actualizar (incluido el cambio de contraseña) y Eliminar:
+  - `negocio/negocio_usuarios.py` (`NegocioUsuarios`, hereda de `NegocioBase`) y `presentacion/presentacion_usuarios.py` (`MenuUsuarios`, hereda de `MenuCrud`)
+  - nunca muestra el hash; no permite nombres repetidos; no elimina al usuario de la sesión ni al último usuario; todas las operaciones exigen la sesión
+  - cambiar la contraseña también quita el bloqueo por intentos fallidos
+- `crear_usuario.py` ahora solo crea el **primer** usuario (con la tabla vacía).
+- Se mantienen el mismo mensaje para "usuario no existe" y "contraseña incorrecta" y el bloqueo de 5 minutos tras 3 intentos.
+- Diagrama `ev1poo.drawio`: nueva clase **Usuario** con sus atributos y métodos.
+- Pruebas: 183 en total (bcrypt, 72 bytes, maskpass simulado, gestión de usuarios y una prueba que revisa que la presentación no importe la capa de datos).
+- README: dependencias, creación de la base paso a paso con todos los scripts en orden, primer usuario y ejecución.
+
+---
+
 # Versión 3.0 (20-11-2026): Evaluación 3 – servicios externos y seguridad
 
 ## ⚠️ Lo que hay que hacer
