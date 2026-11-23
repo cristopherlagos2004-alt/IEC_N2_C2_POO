@@ -248,8 +248,8 @@ def validar_contrasena_ingresada(texto) -> str:
         # contraseña en el byte nulo: "ab\0cd" valdría lo mismo que "ab".
         raise ValueError('La contraseña no puede tener caracteres de control (Tab, Ctrl+tecla).')
     if len(contrasena.encode('utf-8')) > LARGO_MAXIMO_CONTRASENA:
-        raise ValueError(f'La contraseña no puede ocupar más de {LARGO_MAXIMO_CONTRASENA} bytes '
-                         '(72 letras sin tilde; la ñ y cada tilde cuentan doble).')
+        # El límite real es de 72 bytes (límite de bcrypt), pero al usuario no se le habla de bytes
+        raise ValueError('La contraseña es demasiado larga.')
     return contrasena
 
 
