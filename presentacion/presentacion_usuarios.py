@@ -8,7 +8,7 @@ El hash nunca se muestra: la tabla usa Usuario.columnas()/fila(), que no lo incl
 from presentacion.consola import confirmar, pedir_contrasena_nueva
 from presentacion.menu_crud import MenuCrud
 
-REGLAS_CONTRASENA = 'Contraseña: mínimo 8 caracteres, con letras y números, sin incluir el usuario.'
+REGLAS_CONTRASENA = 'Contraseña: mínimo 8 caracteres, con letras y números.'
 
 
 class MenuUsuarios(MenuCrud):
