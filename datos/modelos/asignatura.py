@@ -1,5 +1,5 @@
 from peewee import AutoField, CharField, IntegerField, ForeignKeyField
-from datos.auxiliares.calculos import promedio_notas
+from auxiliares.calculos import promedio_notas
 from datos.modelos.base import BaseModel
 from datos.modelos.docente import Docente
 from datos.modelos.curso import Curso

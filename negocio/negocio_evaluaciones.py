@@ -1,6 +1,6 @@
 from decimal import Decimal
-from datos.auxiliares.formatos import formatear_porcentaje
-from datos.auxiliares.validaciones import validar_texto, validar_fecha, validar_porcentaje
+from auxiliares.formatos import formatear_porcentaje
+from auxiliares.validaciones import validar_texto, validar_fecha, validar_porcentaje
 from datos.repositorio.repositorio_evaluaciones import RepositorioEvaluaciones
 from negocio.negocio_base import NegocioBase
 

@@ -9,7 +9,7 @@ from datetime import date
 import pytest
 from peewee import SqliteDatabase
 
-from datos.auxiliares import seguridad
+from auxiliares import seguridad
 from datos.modelos import MODELOS, PeriodoAcademico, Curso, Docente, Estudiante
 
 

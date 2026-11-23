@@ -17,7 +17,7 @@ Ejemplo de respuesta de /data/2.5/weather?q=Temuco,CL&units=metric&lang=es (resu
 import re
 from dataclasses import dataclass
 
-from datos.auxiliares.validaciones import validar_ciudad, validar_codigo_pais
+from auxiliares.validaciones import validar_ciudad, validar_codigo_pais
 from datos.servicios.cliente_http import ClienteHttp
 from datos.servicios.errores_servicio import (ErrorConfiguracion, ErrorRespuestaInvalida,
                                               registrar_error_servicio)

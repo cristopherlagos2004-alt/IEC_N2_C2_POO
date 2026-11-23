@@ -10,12 +10,12 @@ sesión iniciada no hay forma de consumirlas.
 """
 from decimal import Decimal, ROUND_HALF_UP
 
-from datos.auxiliares.validaciones import (validar_monto, validar_moneda, validar_decimal,
+from auxiliares.validaciones import (validar_monto, validar_moneda, validar_decimal,
                                            validar_ciudad, validar_codigo_pais)
-from datos.auxiliares.errores import ErrorDatos
+from auxiliares.errores import ErrorDatos
 from datos.servicios.errores_servicio import ErrorServicioExterno
 # La presentación recibe los formatos a través de negocio (no importa la capa de datos)
-from datos.auxiliares.formatos import formatear_decimal, formatear_fecha, formatear_monto  # noqa: F401
+from auxiliares.formatos import formatear_decimal, formatear_fecha, formatear_monto  # noqa: F401
 from datos.servicios.servicio_clima import ServicioClima
 from datos.servicios.servicio_indicadores import ServicioIndicadores
 

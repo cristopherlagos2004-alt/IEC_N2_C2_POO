@@ -21,7 +21,7 @@ técnico va a errores.log, con las llaves ocultas.
 """
 import re
 
-from datos.auxiliares.errores import ErrorDatos, obtener_logger
+from auxiliares.errores import ErrorDatos, obtener_logger
 
 
 class ErrorServicioExterno(ErrorDatos):

@@ -1,4 +1,4 @@
-from datos.auxiliares.validaciones import validar_entero, validar_opcion
+from auxiliares.validaciones import validar_entero, validar_opcion
 from datos.modelos import ESTADOS_PERIODO
 from datos.repositorio.repositorio_periodos import RepositorioPeriodos
 from negocio.negocio_base import NegocioBase

@@ -1,5 +1,5 @@
-from datos.auxiliares.formatos import formatear_nota
-from datos.auxiliares.validaciones import validar_texto, validar_entero, validar_codigo
+from auxiliares.formatos import formatear_nota
+from auxiliares.validaciones import validar_texto, validar_entero, validar_codigo
 from datos.repositorio.repositorio_asignaturas import RepositorioAsignaturas
 from negocio.negocio_base import NegocioBase
 

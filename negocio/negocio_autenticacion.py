@@ -1,9 +1,9 @@
 """Inicio de sesión y control de la sesión activa (Evaluación 3)."""
 from datetime import datetime, timedelta
 
-from datos.auxiliares.errores import ErrorDatos
-from datos.auxiliares.seguridad import verificar_contrasena, hash_falso
-from datos.auxiliares.validaciones import validar_nombre_usuario, validar_contrasena_ingresada
+from auxiliares.errores import ErrorDatos
+from auxiliares.seguridad import verificar_contrasena, hash_falso
+from auxiliares.validaciones import validar_nombre_usuario, validar_contrasena_ingresada
 from datos.repositorio.repositorio_usuarios import RepositorioUsuarios
 
 MAX_INTENTOS = 3

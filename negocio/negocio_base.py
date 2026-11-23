@@ -2,7 +2,7 @@ from abc import ABC, abstractmethod
 
 # La capa de presentación recibe estos errores a través de negocio
 # (no importa nada de la capa de datos directamente).
-from datos.auxiliares.errores import ErrorDatos, registrar_error  # noqa: F401
+from auxiliares.errores import ErrorDatos, registrar_error  # noqa: F401
 
 
 class NegocioBase(ABC):

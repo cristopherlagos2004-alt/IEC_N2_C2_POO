@@ -1,4 +1,4 @@
-from datos.auxiliares.validaciones import validar_texto, validar_entero, validar_opcion
+from auxiliares.validaciones import validar_texto, validar_entero, validar_opcion
 from datos.modelos import JORNADAS
 from datos.repositorio.repositorio_cursos import RepositorioCursos
 from negocio.negocio_base import NegocioBase

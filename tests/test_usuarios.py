@@ -1,7 +1,7 @@
 """Pruebas de la gestión de usuarios (Evaluación 3). Usan la base SQLite en memoria."""
 import pytest
 
-from datos.auxiliares.seguridad import verificar_contrasena, es_hash_bcrypt
+from auxiliares.seguridad import verificar_contrasena, es_hash_bcrypt
 from datos.modelos import Usuario
 from negocio.negocio_autenticacion import NegocioAutenticacion, Sesion, ErrorAcceso
 from negocio.negocio_usuarios import NegocioUsuarios

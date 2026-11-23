@@ -1,6 +1,6 @@
 from decimal import Decimal
 from peewee import AutoField, DecimalField, DateField, CharField, ForeignKeyField
-from datos.auxiliares.formatos import formatear_fecha, formatear_nota, texto_o_guion
+from auxiliares.formatos import formatear_fecha, formatear_nota, texto_o_guion
 from datos.modelos.base import BaseModel
 from datos.modelos.estudiante import Estudiante
 from datos.modelos.evaluacion import Evaluacion

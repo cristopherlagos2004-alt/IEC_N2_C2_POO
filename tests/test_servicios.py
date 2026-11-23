@@ -21,7 +21,7 @@ from datos.servicios.servicio_clima import ServicioClima
 from datos.servicios.servicio_indicadores import ServicioIndicadores
 from negocio.negocio_autenticacion import Sesion, ErrorAcceso
 from negocio.negocio_servicios import NegocioServiciosExternos, evaluar_actividad
-from datos.auxiliares.errores import ErrorDatos
+from auxiliares.errores import ErrorDatos
 
 LLAVE = '0123456789abcdef0123456789abcdef'
 HOY = date(2026, 11, 20)

@@ -8,8 +8,8 @@ reglas propias:
 - no se puede dejar el sistema sin usuarios
 - todas las operaciones exigen una sesión iniciada (Sesion.exigir())
 """
-from datos.auxiliares.seguridad import generar_hash
-from datos.auxiliares.validaciones import validar_nombre_usuario, validar_contrasena_nueva
+from auxiliares.seguridad import generar_hash
+from auxiliares.validaciones import validar_nombre_usuario, validar_contrasena_nueva
 from datos.repositorio.repositorio_usuarios import RepositorioUsuarios
 from negocio.negocio_base import NegocioBase
 

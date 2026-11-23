@@ -13,7 +13,7 @@
 3. No hay que recrear la base de datos: la tabla `usuarios` no cambió (`hash_contrasena VARCHAR(255)` sirve para el hash bcrypt de 60 caracteres).
 
 ## Nuevo / cambiado
-- **bcrypt** (`datos/auxiliares/seguridad.py`): `bcrypt.hashpw` con `bcrypt.gensalt(rounds=12)` y `bcrypt.checkpw` reemplazan a PBKDF2. Un hash antiguo o dañado se rechaza sin lanzar error.
+- **bcrypt** (`auxiliares/seguridad.py`): `bcrypt.hashpw` con `bcrypt.gensalt(rounds=12)` y `bcrypt.checkpw` reemplazan a PBKDF2. Un hash antiguo o dañado se rechaza sin lanzar error.
 - **Límite de 72 bytes** (`validaciones.py`): bcrypt solo usa los primeros 72 bytes, así que se rechazan contraseñas más largas (contando bytes: la ñ y las tildes ocupan 2). También se rechazan caracteres de control (bcrypt corta la contraseña en el byte nulo).
 - **maskpass** (`presentacion/consola.py`): `pedir_contrasena()` usa `maskpass.askpass(mask="*")` y es el único lugar donde se lee una contraseña (login, menú Usuarios y `crear_usuario.py`). Se eliminó `getpass`.
 - **Menú "Usuarios"** con Listar, Registrar, Buscar, Actualizar (incluido el cambio de contraseña) y Eliminar:
@@ -21,6 +21,7 @@
   - nunca muestra el hash; no permite nombres repetidos; no elimina al usuario de la sesión ni al último usuario; todas las operaciones exigen la sesión
   - cambiar la contraseña también quita el bloqueo por intentos fallidos
 - `crear_usuario.py` ahora solo crea el **primer** usuario (con la tabla vacía).
+- La carpeta **`auxiliares/`** pasó de `datos/auxiliares/` a la **raíz** del proyecto, para tener los directorios que pide la pauta: auxiliares, datos, negocio y presentación. Los imports cambiaron de `datos.auxiliares.…` a `auxiliares.…` (43 imports en 31 archivos); el código no cambió.
 - Se mantienen el mismo mensaje para "usuario no existe" y "contraseña incorrecta" y el bloqueo de 5 minutos tras 3 intentos.
 - Diagrama `ev1poo.drawio`: nueva clase **Usuario** con sus atributos y métodos.
 - Pruebas: 183 en total (bcrypt, 72 bytes, maskpass simulado, gestión de usuarios y una prueba que revisa que la presentación no importe la capa de datos).

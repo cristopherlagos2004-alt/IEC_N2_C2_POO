@@ -21,7 +21,7 @@ from dataclasses import dataclass
 from datetime import date
 from decimal import Decimal, InvalidOperation
 
-from datos.auxiliares.validaciones import validar_moneda
+from auxiliares.validaciones import validar_moneda
 from datos.servicios.cache_local import CacheLocal
 from datos.servicios.cliente_http import ClienteHttp
 from datos.servicios.errores_servicio import (ERRORES_TEMPORALES, ErrorRespuestaInvalida,

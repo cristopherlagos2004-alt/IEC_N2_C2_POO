@@ -1,5 +1,5 @@
 from peewee import AutoField, DateField, BooleanField, CharField, ForeignKeyField
-from datos.auxiliares.formatos import formatear_fecha, texto_o_guion
+from auxiliares.formatos import formatear_fecha, texto_o_guion
 from datos.modelos.base import BaseModel
 from datos.modelos.estudiante import Estudiante
 

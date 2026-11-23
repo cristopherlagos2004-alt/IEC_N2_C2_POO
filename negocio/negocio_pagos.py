@@ -1,4 +1,4 @@
-from datos.auxiliares.validaciones import validar_monto, validar_opcion
+from auxiliares.validaciones import validar_monto, validar_opcion
 from datos.modelos import ESTADOS_PAGO
 from datos.repositorio.repositorio_pagos import RepositorioPagos
 from negocio.negocio_base import NegocioBase

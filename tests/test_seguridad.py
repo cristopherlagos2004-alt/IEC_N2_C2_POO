@@ -3,9 +3,9 @@ from datetime import datetime, timedelta
 
 import pytest
 
-from datos.auxiliares import seguridad
-from datos.auxiliares.seguridad import generar_hash, verificar_contrasena, es_hash_bcrypt
-from datos.auxiliares.validaciones import (validar_nombre_usuario, validar_contrasena_nueva,
+from auxiliares import seguridad
+from auxiliares.seguridad import generar_hash, verificar_contrasena, es_hash_bcrypt
+from auxiliares.validaciones import (validar_nombre_usuario, validar_contrasena_nueva,
                                            validar_contrasena_ingresada)
 from datos.modelos import Usuario
 from negocio.negocio_autenticacion import (NegocioAutenticacion, Sesion, ErrorAcceso,

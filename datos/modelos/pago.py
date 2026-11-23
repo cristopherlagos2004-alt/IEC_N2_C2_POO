@@ -1,5 +1,5 @@
 from peewee import AutoField, IntegerField, CharField, ForeignKeyField
-from datos.auxiliares.formatos import formatear_monto
+from auxiliares.formatos import formatear_monto
 from datos.modelos.base import BaseModel
 from datos.modelos.apoderado import Apoderado
 

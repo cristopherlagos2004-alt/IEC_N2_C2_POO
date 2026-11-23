@@ -20,17 +20,18 @@ IEC_N2_C2_POO/
 ├── main.py              ← inicia la aplicación (primero pide iniciar sesión)
 ├── crear_usuario.py     ← crea el primer usuario del sistema
 ├── ev1poo.drawio        ← diagrama de clases UML
+├── auxiliares/          ← validaciones, formatos, cálculos, errores y hash bcrypt (seguridad.py)
 ├── datos/               ← capa de datos
 │   ├── conexion.py      ← clase Conexion (conexión a MySQL)
 │   ├── modelos/         ← una clase por entidad del UML
 │   ├── repositorio/     ← persistencia y acceso a la información (CRUD con Peewee)
 │   ├── sql/             ← scripts para crear y mantener la base de datos
-│   ├── servicios/       ← consumo de APIs externas (Evaluación 3)
-│   └── auxiliares/      ← validaciones, formatos, cálculos, errores y hash bcrypt (seguridad.py)
+│   └── servicios/       ← consumo de APIs externas (Evaluación 3)
 ├── negocio/             ← reglas de negocio de cada entidad
 ├── presentacion/        ← menús de consola
 └── tests/               ← pruebas automáticas
 ```
+- **`auxiliares/`** tiene funciones de apoyo que usan varias capas (validar un RUT, dar formato a un monto, calcular un hash, registrar errores). No guarda datos ni conoce la base de datos, por eso está fuera de `datos/`.
 - **`datos/`** aísla el manejo de datos: si cambia la base de datos, el resto del sistema no se ve afectado.
 - **`negocio/`** valida los datos y aplica las reglas (por ejemplo: RUT no repetido, notas entre 1.0 y 7.0, ponderaciones que no pasen de 100%, un solo periodo activo).
 - **`presentacion/`** solo pide datos y muestra resultados; toda la lógica la delega a la capa de negocio.
@@ -179,7 +180,7 @@ datos/servicios/           ← NUEVO: consumo de APIs
 │   ├── servicio_clima.py       OpenWeatherMap
 │   ├── cache_local.py          último valor válido en datos/cache/indicadores.json
 │   └── errores_servicio.py     jerarquía de excepciones y registro sin llaves
-datos/auxiliares/seguridad.py   hash de contraseñas con bcrypt (hashpw / checkpw, costo 12)
+auxiliares/seguridad.py         hash de contraseñas con bcrypt (hashpw / checkpw, costo 12)
 datos/modelos/usuario.py        tabla usuarios
 negocio/negocio_autenticacion.py  login, bloqueo por intentos y clase Sesion
 negocio/negocio_usuarios.py       reglas de la gestión de usuarios

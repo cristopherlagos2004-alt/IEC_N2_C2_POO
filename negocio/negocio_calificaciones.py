@@ -1,4 +1,4 @@
-from datos.auxiliares.validaciones import validar_nota, validar_fecha_hasta_hoy, validar_texto
+from auxiliares.validaciones import validar_nota, validar_fecha_hasta_hoy, validar_texto
 from datos.repositorio.repositorio_calificaciones import RepositorioCalificaciones
 from negocio.negocio_base import NegocioBase
 
