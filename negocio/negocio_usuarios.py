@@ -105,4 +105,4 @@ class NegocioUsuarios(NegocioBase):
             return False, CLAVES_NO_COINCIDEN
         registro.clave_hash = generar_hash(clave_nueva)
         self.repositorio.guardar(registro)
-        return True, f'Se cambió la contraseña de {self._nombrar(registro)}.'
+        return True, f'Se cambió la contraseña del usuario "{registro.descripcion()}".'
