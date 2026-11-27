@@ -1,8 +1,8 @@
 from peewee import CharField
-from datos.modelos.base import BaseModel
+from datos.model_base import ModelBase
 
 
-class Persona(BaseModel):
+class Persona(ModelBase):
     """Clase padre de Estudiante, Docente y Apoderado (herencia).
 
     No tiene tabla propia: sus hijas heredan el atributo nombre y estos métodos.

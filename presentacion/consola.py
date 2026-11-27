@@ -1,6 +1,8 @@
 """Funciones de apoyo para leer y mostrar datos en la consola."""
 from prettytable import PrettyTable
 
+from auxiliares.mensajes import SIN_REGISTROS_PARA_MOSTRAR
+
 # Marca que indica "registro nuevo": no hay un valor actual que conservar.
 SIN_VALOR = object()
 
@@ -23,7 +25,7 @@ def mostrar_tabla(registros):
     a su manera columnas() y fila().
     """
     if not registros:
-        print('No hay registros para mostrar.')
+        print(SIN_REGISTROS_PARA_MOSTRAR)
         return
     tabla = PrettyTable()
     tabla.field_names = registros[0].columnas()

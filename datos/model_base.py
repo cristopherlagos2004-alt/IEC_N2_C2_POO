@@ -2,7 +2,7 @@ from peewee import Model
 from datos.conexion import base_datos
 
 
-class BaseModel(Model):
+class ModelBase(Model):
     """Clase padre de TODOS los modelos (herencia).
 
     Define métodos que cada modelo hijo implementa a su manera (polimorfismo):

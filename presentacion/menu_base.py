@@ -1,4 +1,5 @@
 from abc import ABC, abstractmethod
+from auxiliares.mensajes import OPCION_INVALIDA, MENSAJE_ERROR_INESPERADO
 from negocio.negocio_base import ErrorDatos, registrar_error
 from presentacion.consola import mostrar_titulo, OperacionCancelada
 
@@ -35,7 +36,7 @@ class MenuBase(ABC):
             if eleccion == '0':
                 break
             if not eleccion.isdigit() or not 1 <= int(eleccion) <= len(opciones):
-                print('Opción ingresada NO corresponde. Ingrese nuevamente.')
+                print(OPCION_INVALIDA)
                 continue
             _, accion = opciones[int(eleccion) - 1]
             self._ejecutar(accion)
@@ -49,4 +50,4 @@ class MenuBase(ABC):
             print(error)
         except Exception as error:  # último recurso: se registra y se sigue
             registrar_error(error)
-            print('Ocurrió un error inesperado. Revise el archivo errores.log.')
+            print(MENSAJE_ERROR_INESPERADO)

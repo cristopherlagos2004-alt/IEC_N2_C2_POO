@@ -1,4 +1,4 @@
-from datos.auxiliares.validaciones import validar_nombre, validar_correo, validar_texto
+from auxiliares.validaciones import validar_nombre, validar_correo, validar_texto
 from datos.repositorio.repositorio_docentes import RepositorioDocentes
 from negocio.negocio_base import NegocioBase
 

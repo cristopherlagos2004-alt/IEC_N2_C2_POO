@@ -65,7 +65,7 @@
 - El README daba permisos sobre `db_gestion_escolar`, pero la base se llama `gestion_escolar`.
 
 ## 2. Código duplicado
-- Se eliminó `datos/models.py`. Se dejó un único juego de modelos en `datos/modelos/`, con una clase `BaseModel` común en `base.py` (antes se repetía en los 10 archivos).
+- Se eliminó `datos/models.py`. Se dejó un único juego de modelos en `datos/modelos/`, con una clase `ModelBase` común en `base.py` (antes se repetía en los 10 archivos).
 - Se unificó la configuración en `datos/auxiliar.py` (antes había dos menús distintos).
 - Se eliminó `negocio/gestor_escolar.py`, que no se usaba.
 

@@ -1,11 +1,11 @@
 from peewee import AutoField, CharField, DateField, DecimalField, ForeignKeyField
-from datos.auxiliares.calculos import promedio_notas
-from datos.auxiliares.formatos import formatear_fecha, formatear_nota, formatear_porcentaje
-from datos.modelos.base import BaseModel
+from auxiliares.calculos import promedio_notas
+from auxiliares.formatos import formatear_fecha, formatear_nota, formatear_porcentaje
+from datos.model_base import ModelBase
 from datos.modelos.asignatura import Asignatura
 
 
-class Evaluacion(BaseModel):
+class Evaluacion(ModelBase):
     id_evaluacion = AutoField()
     nombre = CharField(max_length=100)
     fecha = DateField(null=True)

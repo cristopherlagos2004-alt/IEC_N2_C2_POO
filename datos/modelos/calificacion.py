@@ -1,7 +1,7 @@
 from decimal import Decimal
 from peewee import AutoField, DecimalField, DateField, CharField, ForeignKeyField
-from datos.auxiliares.formatos import formatear_fecha, formatear_nota, texto_o_guion
-from datos.modelos.base import BaseModel
+from auxiliares.formatos import formatear_fecha, formatear_nota, texto_o_guion
+from datos.model_base import ModelBase
 from datos.modelos.estudiante import Estudiante
 from datos.modelos.evaluacion import Evaluacion
 
@@ -10,7 +10,7 @@ NOTA_MAXIMA = Decimal('7.0')
 NOTA_APROBACION = Decimal('4.0')
 
 
-class Calificacion(BaseModel):
+class Calificacion(ModelBase):
     id_calificacion = AutoField()
     nota = DecimalField(max_digits=2, decimal_places=1)  # 1.0 a 7.0
     fechaRegistro = DateField(null=True)

@@ -38,7 +38,7 @@ IEC_N2_C2_POO/
 |---|---|
 | **Abstracción** | `RepositorioBase`, `NegocioBase`, `MenuBase` y `MenuCrud` son clases abstractas (`ABC`): definen *qué* se puede hacer y ocultan el *cómo*. La clase `Conexion` oculta los detalles de MySQL. |
 | **Encapsulamiento** | Atributos privados (`__repositorio`, `__negocio`, `__base_datos`, `__titulo`) a los que solo se accede con propiedades de lectura (`@property`). |
-| **Herencia** | `Persona` → `Estudiante`, `Docente` y `Apoderado`. `BaseModel` → todos los modelos. Cada repositorio, clase de negocio y menú hereda de su clase base, y así no se repite el CRUD 10 veces. |
+| **Herencia** | `Persona` → `Estudiante`, `Docente` y `Apoderado`. `ModelBase` → todos los modelos. Cada repositorio, clase de negocio y menú hereda de su clase base, y así no se repite el CRUD 10 veces. |
 | **Polimorfismo** | Cada modelo implementa a su manera `columnas()`, `fila()` y `mostrar_datos()`, y una misma función muestra cualquier modelo en una tabla. `RepositorioEstudiantes` redefine `eliminar()` para hacer una eliminación lógica. El menú principal trata igual a los 10 submenús. |
 
 ---

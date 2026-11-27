@@ -1,4 +1,4 @@
-from datos.auxiliares.validaciones import validar_nombre, validar_rut, validar_telefono
+from auxiliares.validaciones import validar_nombre, validar_rut, validar_telefono
 from datos.repositorio.repositorio_apoderados import RepositorioApoderados
 from negocio.negocio_base import NegocioBase
 

@@ -1,5 +1,5 @@
 from peewee import AutoField, CharField
-from datos.auxiliares.formatos import texto_o_guion
+from auxiliares.formatos import texto_o_guion
 from datos.modelos.persona import Persona
 
 

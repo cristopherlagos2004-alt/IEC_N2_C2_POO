@@ -1,6 +1,6 @@
 from abc import ABC, abstractmethod
 from peewee import PeeweeException, IntegrityError
-from datos.auxiliares.errores import (ErrorDatos, registrar_error,
+from auxiliares.errores import (ErrorDatos, registrar_error,
                                       MENSAJE_GENERAL, MENSAJE_INTEGRIDAD)
 
 

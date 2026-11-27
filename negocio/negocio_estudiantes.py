@@ -1,5 +1,5 @@
-from datos.auxiliares.formatos import formatear_nota, formatear_porcentaje
-from datos.auxiliares.validaciones import validar_rut, validar_nombre, validar_fecha_nacimiento
+from auxiliares.formatos import formatear_nota, formatear_porcentaje
+from auxiliares.validaciones import validar_rut, validar_nombre, validar_fecha_nacimiento
 from datos.repositorio.repositorio_estudiantes import RepositorioEstudiantes
 from negocio.negocio_base import NegocioBase
 

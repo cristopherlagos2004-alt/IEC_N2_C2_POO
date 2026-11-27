@@ -8,6 +8,8 @@ from negocio.negocio_evaluaciones import NegocioEvaluaciones
 from negocio.negocio_calificaciones import NegocioCalificaciones
 from negocio.negocio_asistencias import NegocioAsistencias
 from negocio.negocio_pagos import NegocioPagos
+from auxiliares.constantes import NOMBRE_APP, VERSION_APP
+from auxiliares.mensajes import SALIENDO
 from presentacion.menu_autor import solicitar_datos_autor
 from presentacion.menu_base import MenuBase
 from presentacion.presentacion_periodos import MenuPeriodos
@@ -20,9 +22,6 @@ from presentacion.presentacion_evaluaciones import MenuEvaluaciones
 from presentacion.presentacion_calificaciones import MenuCalificaciones
 from presentacion.presentacion_asistencias import MenuAsistencias
 from presentacion.presentacion_pagos import MenuPagos
-
-NOMBRE_APP = 'Sistema de Gestión Escolar - INACAP'
-VERSION_APP = 'v2.0'
 
 
 class MenuPrincipal(MenuBase):
@@ -66,4 +65,4 @@ class MenuPrincipal(MenuBase):
         print()
         solicitar_datos_autor()
         super().mostrar()
-        print('Saliendo del Sistema')
+        print(SALIENDO)
