@@ -1,6 +1,6 @@
 from auxiliares.formatos import formatear_nota, formatear_porcentaje
 from auxiliares.validaciones import validar_rut, validar_nombre, validar_fecha_nacimiento
-from datos.repositorio.repositorio_estudiantes import RepositorioEstudiantes
+from datos.repositorio import repositorio_estudiantes
 from negocio.negocio_base import NegocioBase
 
 
@@ -13,7 +13,7 @@ class NegocioEstudiantes(NegocioBase):
     }
 
     def __init__(self, repositorio=None):
-        super().__init__(repositorio or RepositorioEstudiantes())
+        super().__init__(repositorio or repositorio_estudiantes)
 
     def _verificar_reglas(self, datos, actual=None):
         if self.repositorio.existe_rut(datos['rut'], self._id(actual)):

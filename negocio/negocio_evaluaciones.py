@@ -1,7 +1,7 @@
 from decimal import Decimal
 from auxiliares.formatos import formatear_porcentaje
 from auxiliares.validaciones import validar_texto, validar_fecha, validar_porcentaje
-from datos.repositorio.repositorio_evaluaciones import RepositorioEvaluaciones
+from datos.repositorio import repositorio_evaluaciones
 from negocio.negocio_base import NegocioBase
 
 
@@ -15,7 +15,7 @@ class NegocioEvaluaciones(NegocioBase):
     relaciones_obligatorias = {'asignatura': 'Debe seleccionar una asignatura.'}
 
     def __init__(self, repositorio=None):
-        super().__init__(repositorio or RepositorioEvaluaciones())
+        super().__init__(repositorio or repositorio_evaluaciones)
 
     def _verificar_reglas(self, datos, actual=None):
         # Regla de negocio: las ponderaciones de una asignatura no pueden pasar de 100%

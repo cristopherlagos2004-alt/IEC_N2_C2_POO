@@ -1,5 +1,5 @@
 from auxiliares.validaciones import validar_fecha_hasta_hoy, validar_si_no, validar_texto
-from datos.repositorio.repositorio_asistencias import RepositorioAsistencias
+from datos.repositorio import repositorio_asistencias
 from negocio.negocio_base import NegocioBase
 
 
@@ -14,7 +14,7 @@ class NegocioAsistencias(NegocioBase):
     relaciones_obligatorias = {'estudiante': 'Debe seleccionar un estudiante.'}
 
     def __init__(self, repositorio=None):
-        super().__init__(repositorio or RepositorioAsistencias())
+        super().__init__(repositorio or repositorio_asistencias)
 
     def _verificar_reglas(self, datos, actual=None):
         if self.repositorio.existe_asistencia(datos['estudiante'], datos['fecha'],

@@ -1,5 +1,5 @@
 from auxiliares.validaciones import validar_nombre, validar_rut, validar_telefono
-from datos.repositorio.repositorio_apoderados import RepositorioApoderados
+from datos.repositorio import repositorio_apoderados
 from negocio.negocio_base import NegocioBase
 
 
@@ -12,7 +12,7 @@ class NegocioApoderados(NegocioBase):
     }
 
     def __init__(self, repositorio=None):
-        super().__init__(repositorio or RepositorioApoderados())
+        super().__init__(repositorio or repositorio_apoderados)
 
     def _verificar_reglas(self, datos, actual=None):
         if self.repositorio.existe_rut(datos['rut'], self._id(actual)):

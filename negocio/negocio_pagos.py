@@ -1,6 +1,6 @@
 from auxiliares.validaciones import validar_monto, validar_opcion
 from datos.modelos import ESTADOS_PAGO
-from datos.repositorio.repositorio_pagos import RepositorioPagos
+from datos.repositorio import repositorio_pagos
 from negocio.negocio_base import NegocioBase
 
 
@@ -14,7 +14,7 @@ class NegocioPagos(NegocioBase):
     relaciones_obligatorias = {'apoderado': 'Debe seleccionar un apoderado.'}
 
     def __init__(self, repositorio=None):
-        super().__init__(repositorio or RepositorioPagos())
+        super().__init__(repositorio or repositorio_pagos)
 
     def registrar_pago(self, pago):
         """Usa el método registrar_pago() del modelo (UML). Devuelve (exito, mensaje)."""
