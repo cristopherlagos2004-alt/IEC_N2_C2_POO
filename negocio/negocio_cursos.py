@@ -1,6 +1,6 @@
-from datos.auxiliares.validaciones import validar_texto, validar_entero, validar_opcion
+from auxiliares.validaciones import validar_texto, validar_entero, validar_opcion
 from datos.modelos import JORNADAS
-from datos.repositorio.repositorio_cursos import RepositorioCursos
+from datos.repositorio import repositorio_cursos
 from negocio.negocio_base import NegocioBase
 
 
@@ -14,7 +14,7 @@ class NegocioCursos(NegocioBase):
     }
 
     def __init__(self, repositorio=None):
-        super().__init__(repositorio or RepositorioCursos())
+        super().__init__(repositorio or repositorio_cursos)
 
     def _verificar_reglas(self, datos, actual=None):
         if self.repositorio.existe_nombre(datos['nombre'], datos['periodo'], self._id(actual)):

@@ -1,10 +1,10 @@
-"""Pruebas de las validaciones (datos/auxiliares/validaciones.py). No usan base de datos."""
+"""Pruebas de las validaciones (auxiliares/validaciones.py). No usan base de datos."""
 from datetime import date, timedelta
 from decimal import Decimal
 
 import pytest
 
-from datos.auxiliares.validaciones import (
+from auxiliares.validaciones import (
     calcular_dv, normalizar_rut, validar_rut, validar_nombre, validar_fecha_nacimiento,
     validar_codigo, validar_nota, validar_porcentaje, validar_monto, validar_fecha_hasta_hoy)
 

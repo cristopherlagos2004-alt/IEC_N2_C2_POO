@@ -1,5 +1,5 @@
-from datos.auxiliares.validaciones import validar_nota, validar_fecha_hasta_hoy, validar_texto
-from datos.repositorio.repositorio_calificaciones import RepositorioCalificaciones
+from auxiliares.validaciones import validar_nota, validar_fecha_hasta_hoy, validar_texto
+from datos.repositorio import repositorio_calificaciones
 from negocio.negocio_base import NegocioBase
 
 
@@ -17,7 +17,7 @@ class NegocioCalificaciones(NegocioBase):
     }
 
     def __init__(self, repositorio=None):
-        super().__init__(repositorio or RepositorioCalificaciones())
+        super().__init__(repositorio or repositorio_calificaciones)
 
     def _verificar_reglas(self, datos, actual=None):
         if self.repositorio.existe_calificacion(datos['estudiante'], datos['evaluacion'],

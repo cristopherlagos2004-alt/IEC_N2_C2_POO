@@ -1,11 +1,17 @@
 """Conversiones de formato para mostrar datos en pantalla."""
 
 FORMATO_FECHA = '%d-%m-%Y'
+FORMATO_FECHA_HORA = '%d-%m-%Y %H:%M'
 
 
 def formatear_fecha(fecha):
     """date(2010, 5, 15) -> '15-05-2010'. Si no hay fecha, devuelve '-'."""
     return fecha.strftime(FORMATO_FECHA) if fecha else '-'
+
+
+def formatear_fecha_hora(fecha_hora):
+    """datetime(2026, 11, 27, 9, 30) -> '27-11-2026 09:30'. Si no hay, devuelve '-'."""
+    return fecha_hora.strftime(FORMATO_FECHA_HORA) if fecha_hora else '-'
 
 
 def formatear_monto(monto):

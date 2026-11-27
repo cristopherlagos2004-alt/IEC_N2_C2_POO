@@ -9,6 +9,9 @@ import re
 from datetime import date, datetime
 from decimal import Decimal, InvalidOperation
 
+from auxiliares.constantes import (LARGO_MINIMO_CLAVE, LARGO_MAXIMO_CLAVE_BYTES,
+                                   LARGO_MINIMO_USUARIO, LARGO_MAXIMO_USUARIO)
+
 PATRON_RUT = re.compile(r'^\d{7,8}-[\dK]$')
 PATRON_CORREO = re.compile(r'^[\w.+-]+@[\w-]+(\.[\w-]+)+$')
 PATRON_TELEFONO = re.compile(r'^\+?\d{8,15}$')
@@ -215,3 +218,35 @@ def validar_fecha_hasta_hoy(texto, campo='La fecha') -> date:
     if fecha > date.today():
         raise ValueError(f'{campo} no puede ser una fecha futura.')
     return fecha
+
+
+# ---------- Usuarios y contraseñas ----------
+
+PATRON_USUARIO = re.compile(r'^[a-z0-9._-]+$')
+
+
+def validar_nombre_usuario(texto) -> str:
+    """Nombre para iniciar sesión: en minúsculas, sin espacios (ej: 'cristopher.lagos')."""
+    usuario = _limpiar(texto).lower()
+    if not LARGO_MINIMO_USUARIO <= len(usuario) <= LARGO_MAXIMO_USUARIO:
+        raise ValueError(f'El nombre de usuario debe tener entre {LARGO_MINIMO_USUARIO} '
+                         f'y {LARGO_MAXIMO_USUARIO} caracteres.')
+    if not PATRON_USUARIO.match(usuario):
+        raise ValueError('El nombre de usuario solo puede tener letras sin tilde, números, '
+                         'puntos, guiones o guiones bajos (sin espacios).')
+    return usuario
+
+
+def validar_clave(clave) -> str:
+    """Contraseña segura: mínimo 8 caracteres, con al menos una letra y un número.
+
+    No se le quitan los espacios: la contraseña se guarda tal como la escribió el usuario.
+    """
+    clave = '' if clave is None else str(clave)
+    if len(clave) < LARGO_MINIMO_CLAVE:
+        raise ValueError(f'La contraseña debe tener al menos {LARGO_MINIMO_CLAVE} caracteres.')
+    if len(clave.encode('utf-8')) > LARGO_MAXIMO_CLAVE_BYTES:
+        raise ValueError('La contraseña es demasiado larga.')
+    if not any(c.isalpha() for c in clave) or not any(c.isdigit() for c in clave):
+        raise ValueError('La contraseña debe tener al menos una letra y un número.')
+    return clave

@@ -1,12 +1,12 @@
 from peewee import AutoField, IntegerField, CharField, ForeignKeyField
-from datos.auxiliares.formatos import formatear_monto
-from datos.modelos.base import BaseModel
+from auxiliares.formatos import formatear_monto
+from datos.model_base import ModelBase
 from datos.modelos.apoderado import Apoderado
 
 ESTADOS_PAGO = ('Pendiente', 'Pagado')
 
 
-class Pago(BaseModel):
+class Pago(ModelBase):
     id_pago = AutoField()
     monto = IntegerField()  # en pesos chilenos, sin decimales
     estado = CharField(max_length=30)

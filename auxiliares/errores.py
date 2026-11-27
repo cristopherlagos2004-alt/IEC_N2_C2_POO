@@ -1,9 +1,7 @@
 """Manejo centralizado de errores de la base de datos."""
 import logging
 
-MENSAJE_GENERAL = 'Ocurrió un error con la base de datos. Revise el archivo errores.log.'
-MENSAJE_INTEGRIDAD = ('No se pudo completar la operación: el dato está repetido '
-                      'o hay otros registros que dependen de este.')
+from auxiliares.mensajes import MENSAJE_GENERAL, MENSAJE_INTEGRIDAD  # noqa: F401
 
 # El detalle técnico se guarda en errores.log y NO se muestra en pantalla,
 # para no exponer información interna de la base de datos.

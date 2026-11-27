@@ -1,10 +1,10 @@
 from peewee import AutoField, DateField, BooleanField, CharField, ForeignKeyField
-from datos.auxiliares.formatos import formatear_fecha, texto_o_guion
-from datos.modelos.base import BaseModel
+from auxiliares.formatos import formatear_fecha, texto_o_guion
+from datos.model_base import ModelBase
 from datos.modelos.estudiante import Estudiante
 
 
-class Asistencia(BaseModel):
+class Asistencia(ModelBase):
     id_asistencia = AutoField()
     fecha = DateField()
     presente = BooleanField(default=True)

@@ -1,5 +1,27 @@
 # Cambios realizados
 
+# Versión 3.0 (27-11-2026): Evaluación 3
+
+**Base de datos**: solo hay que ejecutar los dos scripts nuevos (no hay que recrearla):
+`2026.11.27_10.00_ddl_usuarios.sql` y `2026.11.27_10.15_Insert_Usuario_Inicial.sql`.
+
+## 1. Estructura obligatoria de la pauta
+- `auxiliares/` pasó de `datos/auxiliares/` a la **raíz** del proyecto.
+- `datos/modelos/base.py` (`BaseModel`) pasó a **`datos/model_base.py`** con la clase **`ModelBase`**. Todos los modelos heredan de ella.
+- Nuevos `auxiliares/constantes.py` (nombre de la app, intentos de login, largos de contraseña...) y `auxiliares/mensajes.py` (mensajes reutilizables).
+
+## 2. Repositorios con funciones
+- Los repositorios dejaron de ser clases: cada `datos/repositorio/repositorio_<entidad>.py` es un módulo con las funciones `guardar()` (usa `save()`), `listar()`, `obtener_por_id()`, `buscar()`, `eliminar()` y sus búsquedas propias (ej: `existe_rut()`).
+- `repositorio_base.py` tiene las funciones genéricas (manejo de errores, listar, buscar, revisar repetidos, contar dependencias).
+
+## 3. Usuarios, seguridad y login
+- Nueva entidad **`Usuario`** (tabla `usuarios`) con CRUD completo en el menú *Usuarios*: listar, registrar, buscar, actualizar, deshabilitar, habilitar y cambiar contraseña.
+- Contraseñas guardadas con **BCrypt** (`auxiliares/seguridad.py`) y escritas con **Maskpass** (se ven `****`).
+- La aplicación parte con un **login** (`presentacion/login.py`): sin autenticarse no se llega al menú principal. Máximo 3 intentos.
+- Usuario inicial `admin` / `Admin2026!` (ver README).
+- Nuevas pruebas en `tests/test_usuarios.py` (hash, validaciones, login, deshabilitar, cambio de contraseña).
+
+
 # Versión 2.0 (19-10-2026): ajuste a la pauta de la Evaluación 2
 
 **No hay que recrear la base de datos**: las tablas no cambiaron. Basta con actualizar el código.
@@ -65,7 +87,7 @@
 - El README daba permisos sobre `db_gestion_escolar`, pero la base se llama `gestion_escolar`.
 
 ## 2. Código duplicado
-- Se eliminó `datos/models.py`. Se dejó un único juego de modelos en `datos/modelos/`, con una clase `BaseModel` común en `base.py` (antes se repetía en los 10 archivos).
+- Se eliminó `datos/models.py`. Se dejó un único juego de modelos en `datos/modelos/`, con una clase `ModelBase` común en `base.py` (antes se repetía en los 10 archivos).
 - Se unificó la configuración en `datos/auxiliar.py` (antes había dos menús distintos).
 - Se eliminó `negocio/gestor_escolar.py`, que no se usaba.
 

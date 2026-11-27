@@ -1,6 +1,6 @@
-from datos.auxiliares.validaciones import validar_entero, validar_opcion
+from auxiliares.validaciones import validar_entero, validar_opcion
 from datos.modelos import ESTADOS_PERIODO
-from datos.repositorio.repositorio_periodos import RepositorioPeriodos
+from datos.repositorio import repositorio_periodos
 from negocio.negocio_base import NegocioBase
 
 
@@ -14,7 +14,7 @@ class NegocioPeriodos(NegocioBase):
     }
 
     def __init__(self, repositorio=None):
-        super().__init__(repositorio or RepositorioPeriodos())
+        super().__init__(repositorio or repositorio_periodos)
 
     def _verificar_reglas(self, datos, actual=None):
         excluir = self._id(actual)

@@ -1,11 +1,11 @@
 from peewee import AutoField, CharField, IntegerField, ForeignKeyField
-from datos.modelos.base import BaseModel
+from datos.model_base import ModelBase
 from datos.modelos.periodo import PeriodoAcademico
 
 JORNADAS = ('Mañana', 'Tarde', 'Completa')
 
 
-class Curso(BaseModel):
+class Curso(ModelBase):
     id_curso = AutoField()
     nombre = CharField(max_length=50)
     nivel = IntegerField()

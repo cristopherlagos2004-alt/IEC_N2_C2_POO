@@ -1,6 +1,6 @@
-from datos.auxiliares.formatos import formatear_nota
-from datos.auxiliares.validaciones import validar_texto, validar_entero, validar_codigo
-from datos.repositorio.repositorio_asignaturas import RepositorioAsignaturas
+from auxiliares.formatos import formatear_nota
+from auxiliares.validaciones import validar_texto, validar_entero, validar_codigo
+from datos.repositorio import repositorio_asignaturas
 from negocio.negocio_base import NegocioBase
 
 
@@ -13,7 +13,7 @@ class NegocioAsignaturas(NegocioBase):
     }
 
     def __init__(self, repositorio=None):
-        super().__init__(repositorio or RepositorioAsignaturas())
+        super().__init__(repositorio or repositorio_asignaturas)
 
     def _verificar_reglas(self, datos, actual=None):
         if self.repositorio.existe_codigo(datos['codigo'], datos['curso'], self._id(actual)):

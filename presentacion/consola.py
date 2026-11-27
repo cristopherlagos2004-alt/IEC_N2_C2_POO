@@ -1,5 +1,9 @@
 """Funciones de apoyo para leer y mostrar datos en la consola."""
+import maskpass
 from prettytable import PrettyTable
+
+from auxiliares.constantes import CARACTER_MASCARA
+from auxiliares.mensajes import SIN_REGISTROS_PARA_MOSTRAR
 
 # Marca que indica "registro nuevo": no hay un valor actual que conservar.
 SIN_VALOR = object()
@@ -23,7 +27,7 @@ def mostrar_tabla(registros):
     a su manera columnas() y fila().
     """
     if not registros:
-        print('No hay registros para mostrar.')
+        print(SIN_REGISTROS_PARA_MOSTRAR)
         return
     tabla = PrettyTable()
     tabla.field_names = registros[0].columnas()
@@ -52,3 +56,9 @@ def pedir(texto, actual=SIN_VALOR):
 
 def confirmar(pregunta):
     return input(f'{pregunta} (s/n): ').strip().lower() in ('s', 'si', 'sí')
+
+
+def pedir_clave(texto='Contraseña'):
+    """Pide una contraseña con maskpass: en pantalla se ven asteriscos (****)
+    en vez de lo que se escribe. La contraseña no se limpia ni se modifica."""
+    return maskpass.askpass(prompt=f'{texto}: ', mask=CARACTER_MASCARA)

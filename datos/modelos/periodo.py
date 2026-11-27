@@ -1,10 +1,10 @@
 from peewee import AutoField, IntegerField, CharField
-from datos.modelos.base import BaseModel
+from datos.model_base import ModelBase
 
 ESTADOS_PERIODO = ('Activo', 'Cerrado', 'Inactivo')
 
 
-class PeriodoAcademico(BaseModel):
+class PeriodoAcademico(ModelBase):
     id_periodo = AutoField()
     anio = IntegerField()
     semestre = IntegerField()

@@ -2,7 +2,7 @@ from abc import ABC, abstractmethod
 
 # La capa de presentación recibe estos errores a través de negocio
 # (no importa nada de la capa de datos directamente).
-from datos.auxiliares.errores import ErrorDatos, registrar_error  # noqa: F401
+from auxiliares.errores import ErrorDatos, registrar_error  # noqa: F401
 
 
 class NegocioBase(ABC):
@@ -12,6 +12,8 @@ class NegocioBase(ABC):
     Abstracción: clase abstracta; cada hija declara sus validadores y sus reglas.
     Encapsulamiento: el repositorio es un atributo privado (__repositorio)
     y solo se puede leer con la propiedad repositorio (no se puede reemplazar).
+    El repositorio es un MÓDULO de funciones (ej: datos/repositorio/repositorio_docentes.py):
+    por eso se escribe self.repositorio.guardar(registro), self.repositorio.listar(), etc.
     Polimorfismo: crear(), actualizar() y eliminar() funcionan igual para todas
     las hijas, pero cada una valida y verifica reglas a su manera.
     """

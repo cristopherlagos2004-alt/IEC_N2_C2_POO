@@ -1,11 +1,11 @@
 from peewee import AutoField, CharField, IntegerField, ForeignKeyField
-from datos.auxiliares.calculos import promedio_notas
-from datos.modelos.base import BaseModel
+from auxiliares.calculos import promedio_notas
+from datos.model_base import ModelBase
 from datos.modelos.docente import Docente
 from datos.modelos.curso import Curso
 
 
-class Asignatura(BaseModel):
+class Asignatura(ModelBase):
     id_asignatura = AutoField()
     nombre = CharField(max_length=50)
     codigo = CharField(max_length=20)

@@ -1,5 +1,6 @@
 from abc import abstractmethod
 from datetime import date
+from auxiliares.mensajes import SIN_REGISTROS, ID_NO_ENCONTRADO, OPERACION_CANCELADA
 from presentacion.consola import SIN_VALOR, OperacionCancelada, mostrar_tabla, pedir, confirmar
 from presentacion.menu_base import MenuBase
 
@@ -30,6 +31,11 @@ class MenuCrud(MenuBase):
     def pedir_datos(self, actual=None):
         """Pide los datos del registro. Si viene 'actual', es una actualización."""
 
+    @property
+    def texto_eliminar(self):
+        """Nombre de la opción eliminar. Los hijos lo cambian si es una eliminación lógica."""
+        return 'Eliminar'
+
     def opciones_extra(self):
         """Opciones propias de cada menú. Por defecto no hay."""
         return []
@@ -40,7 +46,7 @@ class MenuCrud(MenuBase):
             ('Registrar', self.registrar),
             ('Buscar', self.buscar),
             ('Actualizar', self.actualizar),
-            ('Eliminar', self.eliminar),
+            (self.texto_eliminar, self.eliminar),
         ] + self.opciones_extra()
 
     # ----- Operaciones CRUD -----
@@ -60,12 +66,12 @@ class MenuCrud(MenuBase):
         """Muestra los registros y pide un Id. Devuelve el registro o None."""
         registros = self.negocio.listar()
         if not registros:
-            print('No hay registros.')
+            print(SIN_REGISTROS)
             return None
         mostrar_tabla(registros)
         registro = self.negocio.obtener(input(f'Ingrese el Id para {accion}: '))
         if registro is None:
-            print('No se encontró un registro con ese Id.')
+            print(ID_NO_ENCONTRADO)
         return registro
 
     def actualizar(self):
@@ -77,14 +83,15 @@ class MenuCrud(MenuBase):
         print(mensaje)
 
     def eliminar(self):
-        registro = self.seleccionar('eliminar')
+        accion = self.texto_eliminar.lower()
+        registro = self.seleccionar(accion)
         if registro is None:
             return
-        if confirmar(f'¿Seguro que desea eliminar "{registro.descripcion()}"?'):
+        if confirmar(f'¿Seguro que desea {accion} "{registro.descripcion()}"?'):
             _, mensaje = self.negocio.eliminar(registro)
             print(mensaje)
         else:
-            print('Operación cancelada.')
+            print(OPERACION_CANCELADA)
 
     # ----- Ayudas para los menús hijos -----
 

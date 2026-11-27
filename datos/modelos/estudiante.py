@@ -1,6 +1,6 @@
 from peewee import AutoField, CharField, DateField, BooleanField, ForeignKeyField
-from datos.auxiliares.calculos import promedio_notas, porcentaje
-from datos.auxiliares.formatos import formatear_fecha
+from auxiliares.calculos import promedio_notas, porcentaje
+from auxiliares.formatos import formatear_fecha
 from datos.modelos.persona import Persona
 from datos.modelos.curso import Curso
 from datos.modelos.apoderado import Apoderado

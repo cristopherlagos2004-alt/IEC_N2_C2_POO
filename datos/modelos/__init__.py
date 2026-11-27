@@ -1,4 +1,4 @@
-from datos.modelos.base import BaseModel
+from datos.model_base import ModelBase
 from datos.modelos.persona import Persona
 from datos.modelos.periodo import PeriodoAcademico, ESTADOS_PERIODO
 from datos.modelos.curso import Curso, JORNADAS
@@ -10,7 +10,8 @@ from datos.modelos.evaluacion import Evaluacion
 from datos.modelos.calificacion import Calificacion
 from datos.modelos.asistencia import Asistencia
 from datos.modelos.pago import Pago, ESTADOS_PAGO
+from datos.modelos.usuario import Usuario
 
-# Modelos que tienen tabla en la base de datos (Persona y BaseModel no tienen).
+# Modelos que tienen tabla en la base de datos (Persona y ModelBase no tienen).
 MODELOS = [PeriodoAcademico, Curso, Docente, Asignatura, Apoderado,
-           Estudiante, Evaluacion, Calificacion, Asistencia, Pago]
+           Estudiante, Evaluacion, Calificacion, Asistencia, Pago, Usuario]

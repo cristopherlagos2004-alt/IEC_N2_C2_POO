@@ -1,5 +1,5 @@
-from datos.auxiliares.validaciones import validar_nombre, validar_correo, validar_texto
-from datos.repositorio.repositorio_docentes import RepositorioDocentes
+from auxiliares.validaciones import validar_nombre, validar_correo, validar_texto
+from datos.repositorio import repositorio_docentes
 from negocio.negocio_base import NegocioBase
 
 
@@ -13,7 +13,7 @@ class NegocioDocentes(NegocioBase):
     }
 
     def __init__(self, repositorio=None):
-        super().__init__(repositorio or RepositorioDocentes())
+        super().__init__(repositorio or repositorio_docentes)
 
     def ficha(self, docente):
         """Datos del docente, sus asignaturas y sus estudiantes."""

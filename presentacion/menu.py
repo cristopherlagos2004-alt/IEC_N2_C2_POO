@@ -8,6 +8,8 @@ from negocio.negocio_evaluaciones import NegocioEvaluaciones
 from negocio.negocio_calificaciones import NegocioCalificaciones
 from negocio.negocio_asistencias import NegocioAsistencias
 from negocio.negocio_pagos import NegocioPagos
+from auxiliares.constantes import NOMBRE_APP, VERSION_APP
+from auxiliares.mensajes import SALIENDO
 from presentacion.menu_autor import solicitar_datos_autor
 from presentacion.menu_base import MenuBase
 from presentacion.presentacion_periodos import MenuPeriodos
@@ -20,9 +22,7 @@ from presentacion.presentacion_evaluaciones import MenuEvaluaciones
 from presentacion.presentacion_calificaciones import MenuCalificaciones
 from presentacion.presentacion_asistencias import MenuAsistencias
 from presentacion.presentacion_pagos import MenuPagos
-
-NOMBRE_APP = 'Sistema de Gestión Escolar - INACAP'
-VERSION_APP = 'v2.0'
+from presentacion.presentacion_usuarios import MenuUsuarios
 
 
 class MenuPrincipal(MenuBase):
@@ -32,8 +32,14 @@ class MenuPrincipal(MenuBase):
     los trata igual (llama a su método mostrar()); cada uno responde a su manera.
     """
 
-    def __init__(self):
-        super().__init__(f'{NOMBRE_APP} {VERSION_APP}', texto_salida='Salir')
+    def __init__(self, negocio_usuarios):
+        # Seguridad: sin un usuario autenticado no se puede crear el menú principal
+        usuario = negocio_usuarios.usuario_sesion
+        if usuario is None:
+            raise PermissionError('Debe iniciar sesión para acceder al menú principal.')
+        super().__init__(f'{NOMBRE_APP} {VERSION_APP} - Usuario: {usuario.nombre_usuario}',
+                         texto_salida='Cerrar sesión y salir')
+        self.__negocio_usuarios = negocio_usuarios
 
         # Una sola instancia de cada clase de negocio, compartida entre los menús
         periodos = NegocioPeriodos()
@@ -55,15 +61,17 @@ class MenuPrincipal(MenuBase):
             MenuCalificaciones(NegocioCalificaciones(), estudiantes, evaluaciones),
             MenuAsistencias(NegocioAsistencias(), estudiantes),
             MenuPagos(NegocioPagos(), apoderados),
+            MenuUsuarios(negocio_usuarios),
         ]
 
     def opciones(self):
         return [(submenu.titulo, submenu.mostrar) for submenu in self.__submenus]
 
     def mostrar(self):
-        # Polimorfismo: redefine mostrar() para agregar los autores al inicio
-        # y el mensaje de salida; el resto lo hace la versión de MenuBase.
+        # Polimorfismo: redefine mostrar() para agregar los autores al inicio,
+        # y al salir cierra la sesión; el resto lo hace la versión de MenuBase.
         print()
         solicitar_datos_autor()
         super().mostrar()
-        print('Saliendo del Sistema')
+        self.__negocio_usuarios.cerrar_sesion()
+        print(SALIENDO)
