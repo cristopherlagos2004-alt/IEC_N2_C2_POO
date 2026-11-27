@@ -31,6 +31,11 @@ class MenuCrud(MenuBase):
     def pedir_datos(self, actual=None):
         """Pide los datos del registro. Si viene 'actual', es una actualización."""
 
+    @property
+    def texto_eliminar(self):
+        """Nombre de la opción eliminar. Los hijos lo cambian si es una eliminación lógica."""
+        return 'Eliminar'
+
     def opciones_extra(self):
         """Opciones propias de cada menú. Por defecto no hay."""
         return []
@@ -41,7 +46,7 @@ class MenuCrud(MenuBase):
             ('Registrar', self.registrar),
             ('Buscar', self.buscar),
             ('Actualizar', self.actualizar),
-            ('Eliminar', self.eliminar),
+            (self.texto_eliminar, self.eliminar),
         ] + self.opciones_extra()
 
     # ----- Operaciones CRUD -----
@@ -78,10 +83,11 @@ class MenuCrud(MenuBase):
         print(mensaje)
 
     def eliminar(self):
-        registro = self.seleccionar('eliminar')
+        accion = self.texto_eliminar.lower()
+        registro = self.seleccionar(accion)
         if registro is None:
             return
-        if confirmar(f'¿Seguro que desea eliminar "{registro.descripcion()}"?'):
+        if confirmar(f'¿Seguro que desea {accion} "{registro.descripcion()}"?'):
             _, mensaje = self.negocio.eliminar(registro)
             print(mensaje)
         else:
